@@ -6,13 +6,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "POST only" });
   }
 
-  // Optional shared-passcode gate. Set APP_PASSCODE in Vercel to switch it on.
-  // Leave it unset and the app is open to anyone with the URL.
-  const gate = process.env.APP_PASSCODE;
-  if (gate && req.headers["x-app-passcode"] !== gate) {
-    return res.status(401).json({ error: "Bad passcode" });
-  }
-
   const { messages, model, temperature, response_format } = req.body || {};
   if (!Array.isArray(messages)) {
     return res.status(400).json({ error: "messages array required" });
