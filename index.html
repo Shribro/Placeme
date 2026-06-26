@@ -1,730 +1,597 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Casebook Cockpit — Placement Prep</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Case Practice Engine — Casebook Cockpit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
-:root{
-  --ink:#16233A; --ink-2:#1E3050; --paper:#EFF1F4; --surface:#FFFFFF;
-  --amber:#E8A93B; --amber-deep:#C8862A; --teal:#0E7C7B; --teal-soft:#E2F0EF;
-  --slate:#5A6577; --line:#DDE1E7; --line-soft:#E9ECF1;
-  --easy:#2E8B6B; --med:#C8862A; --hard:#C0524A;
-  --shadow:0 1px 2px rgba(22,35,58,.06),0 8px 24px rgba(22,35,58,.06);
-  --shadow-lg:0 12px 48px rgba(22,35,58,.18);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-text-size-adjust:100%}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);
-  line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-.mono{font-family:'JetBrains Mono',monospace}
-.disp{font-family:'Space Grotesk',sans-serif}
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-a{color:inherit}
+  :root{
+    --ink:#0f1f3d;            /* ink navy */
+    --ink-2:#16294b;
+    --ink-3:#22386a;
+    --paper:#f7f8fb;
+    --card:#ffffff;
+    --amber:#e8a23d;
+    --amber-soft:#f7e7c8;
+    --teal:#1fa39b;
+    --teal-soft:#d6efed;
+    --line:#dfe4ee;
+    --muted:#5d6b86;
+    --text:#11203b;
+    --danger:#c0492f;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(15,31,61,.06), 0 8px 24px rgba(15,31,61,.06);
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --display:'Space Grotesk',system-ui,sans-serif;
+    --body:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:var(--body);color:var(--text);background:var(--paper);
+    display:flex;flex-direction:column;min-height:100dvh;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;cursor:pointer}
+  .wrap{flex:1;display:flex;flex-direction:column;max-width:880px;width:100%;margin:0 auto;padding:0 16px}
 
-/* ---------- shell ---------- */
-.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
-.rail{background:var(--ink);color:#fff;padding:26px 18px;position:sticky;top:0;height:100vh;
-  display:flex;flex-direction:column;gap:6px}
-.brand{display:flex;align-items:center;gap:11px;margin-bottom:26px;padding:0 6px}
-.brand .mark{width:34px;height:34px;border-radius:9px;background:var(--amber);
-  display:grid;place-items:center;color:var(--ink);font-weight:700;font-family:'Space Grotesk';
-  flex-shrink:0;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.12)}
-.brand h1{font-family:'Space Grotesk';font-size:15px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
-.brand h1 span{display:block;font-size:10.5px;font-weight:400;color:#9FB0C9;letter-spacing:.06em;
-  text-transform:uppercase;margin-top:2px}
-.nav-item{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:9px;
-  color:#AEBBD0;font-size:14px;font-weight:500;transition:.15s;text-align:left;width:100%}
-.nav-item .ic{width:19px;text-align:center;font-size:15px}
-.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
-.nav-item.active{background:var(--ink-2);color:#fff}
-.nav-item.active .ic{filter:drop-shadow(0 0 6px rgba(232,169,59,.7))}
-.rail-foot{margin-top:auto;padding:14px 8px 2px;border-top:1px solid rgba(255,255,255,.08);
-  font-size:11px;color:#7D8DA8;line-height:1.5}
-.rail-foot b{color:#AEBBD0;font-weight:600}
+  /* Header */
+  header{
+    display:flex;align-items:center;gap:12px;padding:16px 0 12px;border-bottom:1px solid var(--line);
+  }
+  .mark{
+    width:34px;height:34px;border-radius:9px;background:var(--ink);color:#fff;
+    display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.02em;
+    box-shadow:inset 0 0 0 1.5px var(--amber);
+  }
+  .title{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:-.01em}
+  .title small{display:block;font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;letter-spacing:.04em;margin-top:1px}
+  .grow{flex:1}
+  .iconbtn{
+    border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;
+    font-size:13px;font-weight:500;color:var(--ink);display:inline-flex;gap:7px;align-items:center;
+  }
+  .iconbtn:hover{border-color:var(--ink-3)}
+  .iconbtn.warn{color:var(--danger)}
 
-.main{min-width:0;padding:30px 38px 90px;max-width:1180px}
-.topbar{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:26px;flex-wrap:wrap}
-.topbar .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--slate);
-  font-weight:600;font-family:'JetBrains Mono'}
-.topbar h2{font-family:'Space Grotesk';font-size:30px;font-weight:600;letter-spacing:-.02em;margin-top:5px}
-.topbar p{color:var(--slate);font-size:14px;margin-top:4px;max-width:560px}
+  /* Setup bar */
+  .setup{display:none;flex-direction:column;gap:12px;padding:16px;margin:14px 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .setup.open{display:flex}
+  .setup h2{margin:0;font-family:var(--display);font-size:14px;font-weight:600}
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field label{font-size:12px;font-weight:600;color:var(--muted)}
+  .field input,.field select{
+    font-family:var(--mono);font-size:13px;padding:10px 12px;border:1px solid var(--line);
+    border-radius:10px;background:var(--paper);color:var(--text);
+  }
+  .field input:focus,.field select:focus{outline:2px solid var(--teal);outline-offset:0;border-color:transparent}
+  .hint{font-size:11px;color:var(--muted);line-height:1.5}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row>*{flex:1;min-width:160px}
 
-/* ---------- readiness header chip ---------- */
-.ready-chip{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--line);
-  border-radius:14px;padding:13px 18px;box-shadow:var(--shadow)}
-.ring{--p:0;width:54px;height:54px;border-radius:50%;flex-shrink:0;
-  background:conic-gradient(var(--teal) calc(var(--p)*1%), var(--line-soft) 0);
-  display:grid;place-items:center}
-.ring::after{content:"";position:absolute;width:40px;height:40px;border-radius:50%;background:var(--surface)}
-.ring b{position:relative;z-index:1;font-family:'Space Grotesk';font-size:14px;font-weight:600}
-.ready-chip .lbl{font-size:11px;color:var(--slate);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
-.ready-chip .val{font-family:'Space Grotesk';font-size:15px;font-weight:600;margin-top:1px}
+  /* Case picker */
+  .picker{display:flex;gap:8px;flex-wrap:wrap;padding:14px 0 4px}
+  .chip{
+    border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-size:13px;
+    font-weight:500;color:var(--ink);display:inline-flex;gap:8px;align-items:center;
+  }
+  .chip .tag{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;
+    padding:2px 6px;border-radius:5px;background:var(--teal-soft);color:#0c6b65}
+  .chip[data-type="guesstimate"] .tag{background:var(--amber-soft);color:#8a5a14}
+  .chip.active{border-color:var(--ink);background:var(--ink);color:#fff}
+  .chip.active .tag{background:rgba(255,255,255,.2);color:#fff}
 
-/* ---------- cards / grid ---------- */
-.grid{display:grid;gap:16px}
-.cols-2{grid-template-columns:repeat(2,1fr)}
-.cols-3{grid-template-columns:repeat(3,1fr)}
-.cols-4{grid-template-columns:repeat(4,1fr)}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
-.panel-p{padding:20px}
-.section-h{display:flex;align-items:center;justify-content:space-between;margin:30px 0 14px}
-.section-h h3{font-family:'Space Grotesk';font-size:17px;font-weight:600}
-.section-h .hint{font-size:12px;color:var(--slate)}
+  /* Chat */
+  .stage{flex:1;display:flex;flex-direction:column;gap:14px;padding:14px 0 120px}
+  .casehead{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--amber);
+    border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+  .casehead .k{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+  .casehead h3{margin:4px 0 0;font-family:var(--display);font-size:16px;font-weight:600}
+  .feed{display:flex;flex-direction:column;gap:12px}
+  .msg{display:flex;gap:10px;max-width:92%}
+  .msg .who{width:30px;height:30px;border-radius:8px;flex:none;display:grid;place-items:center;
+    font-family:var(--mono);font-size:11px;font-weight:600}
+  .msg.ai .who{background:var(--ink);color:#fff}
+  .msg.me{align-self:flex-end;flex-direction:row-reverse}
+  .msg.me .who{background:var(--teal);color:#fff}
+  .bubble{padding:11px 14px;border-radius:13px;font-size:14.5px;line-height:1.55;white-space:pre-wrap}
+  .msg.ai .bubble{background:var(--card);border:1px solid var(--line);border-top-left-radius:4px}
+  .msg.me .bubble{background:var(--ink);color:#fff;border-top-right-radius:4px}
+  .sys{font-size:12px;color:var(--muted);text-align:center;font-family:var(--mono)}
+  .typing{display:inline-flex;gap:4px;align-items:center}
+  .typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:bl 1s infinite}
+  .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+  @keyframes bl{0%,60%,100%{opacity:.25}30%{opacity:1}}
 
-/* stat tiles */
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;
-  box-shadow:var(--shadow);position:relative;overflow:hidden}
-.stat .k{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--slate);font-weight:600}
-.stat .v{font-family:'Space Grotesk';font-size:34px;font-weight:600;letter-spacing:-.02em;margin-top:6px;line-height:1}
-.stat .sub{font-size:12px;color:var(--slate);margin-top:5px}
-.stat .edge{position:absolute;left:0;top:0;bottom:0;width:4px}
+  /* Reveal panel */
+  .reveal{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+  .reveal summary{list-style:none;cursor:pointer;padding:13px 16px;display:flex;align-items:center;gap:10px;
+    font-family:var(--display);font-weight:600;font-size:14px}
+  .reveal summary::-webkit-details-marker{display:none}
+  .reveal summary .tag{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--amber);border:1px solid var(--amber);padding:2px 7px;border-radius:6px}
+  .reveal .body{padding:0 16px 16px;font-size:14px;line-height:1.65}
+  .reveal .body .blur{filter:blur(7px);transition:filter .25s;user-select:none}
+  .reveal[open] .body .blur{filter:none;user-select:auto}
+  .reveal .body h4{font-family:var(--display);font-size:13px;margin:14px 0 5px;color:var(--ink)}
+  .reveal .body ul{margin:6px 0;padding-left:18px}
+  .reveal .body li{margin:3px 0}
+  .tree{font-family:var(--mono);font-size:12.5px;line-height:1.7;background:var(--paper);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;white-space:pre-wrap}
 
-/* progress bars per type */
-.bar-row{display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid var(--line-soft)}
-.bar-row:last-child{border-bottom:none}
-.bar-row .nm{width:120px;font-size:13px;font-weight:600;flex-shrink:0}
-.bar{flex:1;height:9px;background:var(--line-soft);border-radius:6px;overflow:hidden}
-.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),#13988f);border-radius:6px;transition:width .5s}
-.bar-row .pct{width:78px;text-align:right;font-family:'JetBrains Mono';font-size:12px;color:var(--slate)}
+  /* Score */
+  .score{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+  .score h3{margin:0 0 4px;font-family:var(--display);font-size:15px}
+  .ladder{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;
+    padding:4px 10px;border-radius:7px;margin:6px 0 12px}
+  .ladder.shaky{background:#fbe3dd;color:#9c3a26}.ladder.developing{background:var(--amber-soft);color:#8a5a14}
+  .ladder.solid{background:var(--teal-soft);color:#0c6b65}.ladder.strong{background:#d8e8d2;color:#3a6a2c}
+  .ladder.mastered{background:var(--ink);color:#fff}
+  .dim{display:flex;align-items:center;gap:10px;margin:7px 0}
+  .dim .nm{flex:1;font-size:13px;font-weight:500}
+  .dim .bar{flex:1;height:7px;background:var(--line);border-radius:5px;overflow:hidden}
+  .dim .bar i{display:block;height:100%;background:var(--teal)}
+  .dim .sc{font-family:var(--mono);font-size:12px;width:30px;text-align:right}
+  .dimnote{font-size:12px;color:var(--muted);margin:0 0 8px 0}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+  .cols h4{font-family:var(--display);font-size:13px;margin:0 0 5px}
+  .cols ul{margin:0;padding-left:16px;font-size:13px;line-height:1.55}
+  @media(max-width:560px){.cols{grid-template-columns:1fr}}
 
-/* due queue */
-.due-item{display:flex;align-items:center;gap:13px;padding:12px 14px;border:1px solid var(--line);
-  border-radius:11px;background:var(--surface);margin-bottom:9px;transition:.15s}
-.due-item:hover{border-color:var(--amber);box-shadow:0 4px 14px rgba(232,169,59,.12)}
-.due-item .tag{font-family:'JetBrains Mono';font-size:11px;font-weight:600;color:var(--slate);width:46px}
-.due-item .t{flex:1;font-size:14px;font-weight:500}
-.due-item .when{font-size:11px;font-weight:600;color:var(--hard);font-family:'JetBrains Mono'}
-
-/* ---------- filters ---------- */
-.filters{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
-  box-shadow:var(--shadow);margin-bottom:18px}
-.filter-group+.filter-group{margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft)}
-.filter-group .glbl{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--slate);
-  font-weight:600;margin-bottom:9px;display:flex;align-items:center;gap:8px}
-.chips{display:flex;flex-wrap:wrap;gap:7px}
-.chip{padding:6px 13px;border-radius:20px;font-size:12.5px;font-weight:500;border:1.5px solid var(--line);
-  background:var(--surface);color:var(--slate);transition:.13s;white-space:nowrap}
-.chip:hover{border-color:var(--slate)}
-.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
-.chip.on.amber{background:var(--amber);border-color:var(--amber);color:var(--ink)}
-.filters .clear{font-size:12px;color:var(--teal);font-weight:600;margin-left:auto}
-.results-meta{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px;color:var(--slate)}
-.results-meta b{color:var(--ink);font-family:'Space Grotesk'}
-
-/* ---------- case cards ---------- */
-.case-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:14px}
-.ccard{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:16px 17px;
-  box-shadow:var(--shadow);cursor:pointer;transition:.16s;position:relative;display:flex;flex-direction:column;gap:10px}
-.ccard:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(22,35,58,.13);border-color:#C7CEDA}
-.ccard .row1{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.ccard .cid{font-family:'JetBrains Mono';font-size:11px;font-weight:600;color:var(--slate);
-  background:var(--paper);padding:2px 7px;border-radius:5px}
-.ccard .title{font-family:'Space Grotesk';font-size:16px;font-weight:600;letter-spacing:-.01em;line-height:1.25}
-.ccard .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
-.pill{font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--paper);color:var(--slate)}
-.pill.type{background:rgba(22,35,58,.06);color:var(--ink)}
-.pill.diff-Easy{background:rgba(46,139,107,.13);color:var(--easy)}
-.pill.diff-Med{background:rgba(200,134,42,.14);color:var(--med)}
-.pill.diff-Hard{background:rgba(192,82,74,.13);color:var(--hard)}
-.ccard .foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:9px;
-  border-top:1px solid var(--line-soft)}
-.status-dot{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600}
-.status-dot .d{width:8px;height:8px;border-radius:50%;background:var(--line)}
-.st-Mastered .d{background:var(--teal)} .st-Mastered{color:var(--teal)}
-.st-Reviewed .d{background:var(--amber)} .st-Reviewed{color:var(--amber-deep)}
-.st-Attempting .d{background:#8094B4} .st-Attempting{color:#5A6577}
-.ccard .due-flag{font-family:'JetBrains Mono';font-size:10.5px;font-weight:600;color:#fff;
-  background:var(--hard);padding:2px 7px;border-radius:5px}
-
-/* ---------- modal ---------- */
-.scrim{position:fixed;inset:0;background:rgba(15,23,40,.55);backdrop-filter:blur(3px);
-  display:none;z-index:50;align-items:flex-end;justify-content:center}
-.scrim.open{display:flex}
-.sheet{background:var(--surface);width:100%;max-width:680px;max-height:92vh;overflow-y:auto;
-  border-radius:18px 18px 0 0;box-shadow:var(--shadow-lg);animation:rise .28s cubic-bezier(.16,1,.3,1)}
-@keyframes rise{from{transform:translateY(34px);opacity:.6}to{transform:translateY(0);opacity:1}}
-@media(min-width:760px){.scrim{align-items:center}.sheet{border-radius:18px}}
-.sheet-h{padding:22px 26px 18px;border-bottom:1px solid var(--line-soft);position:sticky;top:0;
-  background:var(--surface);z-index:2}
-.sheet-h .x{position:absolute;right:18px;top:18px;width:32px;height:32px;border-radius:8px;
-  display:grid;place-items:center;color:var(--slate);font-size:18px;background:var(--paper)}
-.sheet-h .x:hover{background:var(--line-soft);color:var(--ink)}
-.sheet-h .cid{font-family:'JetBrains Mono';font-size:11px;font-weight:600;color:var(--slate)}
-.sheet-h h3{font-family:'Space Grotesk';font-size:22px;font-weight:600;letter-spacing:-.02em;margin:5px 0 9px;padding-right:40px}
-.sheet-body{padding:22px 26px 30px}
-.kv{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
-.lead{background:var(--paper);border-radius:12px;padding:15px 17px;font-size:14px;color:#34425C;margin:6px 0 20px;
-  border-left:3px solid var(--amber)}
-.lead b{color:var(--ink)}
-.step-h{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--slate);font-weight:700;
-  font-family:'JetBrains Mono';margin:0 0 11px;display:flex;align-items:center;gap:9px}
-.step-h .n{width:20px;height:20px;border-radius:50%;background:var(--ink);color:#fff;display:grid;
-  place-items:center;font-size:11px}
-
-/* attempt + timer */
-.attempt-box{border:1px dashed var(--line);border-radius:12px;padding:16px;margin-bottom:18px}
-.timer{font-family:'Space Grotesk';font-size:30px;font-weight:600;letter-spacing:.01em}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 17px;border-radius:9px;font-size:13.5px;
-  font-weight:600;transition:.14s}
-.btn-primary{background:var(--ink);color:#fff}
-.btn-primary:hover{background:var(--ink-2)}
-.btn-amber{background:var(--amber);color:var(--ink)}
-.btn-amber:hover{background:var(--amber-deep);color:#fff}
-.btn-ghost{background:var(--paper);color:var(--ink)}
-.btn-ghost:hover{background:var(--line-soft)}
-.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-
-/* blur-reveal scaffold (signature) */
-.reveal-wrap{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:4px}
-.reveal-content{padding:18px 19px;transition:filter .45s ease, opacity .45s}
-.reveal-content.locked{filter:blur(9px);opacity:.55;user-select:none;pointer-events:none}
-.reveal-veil{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:13px;text-align:center;padding:24px;background:rgba(244,245,247,.4)}
-.reveal-veil.hide{display:none}
-.reveal-veil .lk{font-size:24px}
-.reveal-veil p{font-size:13.5px;color:var(--slate);max-width:330px}
-.scaffold-step{font-size:14px;color:#33415A;padding:9px 0;border-bottom:1px solid var(--line-soft);
-  display:flex;gap:11px}
-.scaffold-step:last-child{border-bottom:none}
-.scaffold-step .b{color:var(--teal);font-weight:700;font-family:'JetBrains Mono';flex-shrink:0}
-.book-ref{font-size:12.5px;color:var(--slate);margin-top:14px;background:var(--teal-soft);
-  border-radius:9px;padding:11px 14px;display:flex;align-items:center;gap:9px}
-.book-ref b{color:var(--teal)}
-
-/* confidence rating */
-.rate{margin-top:22px;padding-top:20px;border-top:1px solid var(--line-soft)}
-.rate-btns{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
-.rate-btn{flex:1;min-width:54px;padding:12px 6px;border-radius:10px;border:1.5px solid var(--line);
-  background:var(--surface);text-align:center;transition:.13s}
-.rate-btn:hover{border-color:var(--teal);background:var(--teal-soft)}
-.rate-btn.sel{border-color:var(--teal);background:var(--teal);color:#fff}
-.rate-btn .num{font-family:'Space Grotesk';font-size:18px;font-weight:600;display:block}
-.rate-btn .cap{font-size:10px;color:var(--slate);margin-top:2px}
-.rate-btn.sel .cap{color:rgba(255,255,255,.85)}
-.sched-note{margin-top:13px;font-size:13px;color:var(--teal);font-weight:600;display:none}
-.sched-note.show{display:block}
-
-/* industries */
-.ind-card{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:17px 18px;
-  box-shadow:var(--shadow)}
-.ind-card h4{font-family:'Space Grotesk';font-size:16px;font-weight:600;margin-bottom:10px;
-  display:flex;align-items:center;justify-content:space-between}
-.ind-card .reg{font-size:10.5px;font-family:'JetBrains Mono';color:#fff;background:var(--teal);
-  padding:2px 8px;border-radius:5px;font-weight:500}
-.ind-row{font-size:13px;color:#34425C;padding:6px 0;border-top:1px solid var(--line-soft);display:flex;gap:9px}
-.ind-row .l{color:var(--slate);font-weight:600;width:78px;flex-shrink:0;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
-
-/* profile */
-.prof-section{margin-bottom:14px}
-.prof-head{display:flex;align-items:center;gap:12px;padding:15px 18px;background:var(--surface);
-  border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);cursor:pointer;transition:.14s}
-.prof-head:hover{border-color:#C7CEDA}
-.prof-head .ic{font-size:20px}
-.prof-head .nm{font-family:'Space Grotesk';font-size:16px;font-weight:600;flex:1}
-.prof-head .cnt{font-family:'JetBrains Mono';font-size:12px;color:var(--slate)}
-.prof-head .pbar{width:80px;height:7px;background:var(--line-soft);border-radius:5px;overflow:hidden}
-.prof-head .pbar i{display:block;height:100%;background:var(--amber);border-radius:5px}
-.prof-head .chev{color:var(--slate);transition:.2s;font-size:13px}
-.prof-section.open .chev{transform:rotate(90deg)}
-.prof-body{display:none;padding:6px 4px 4px}
-.prof-section.open .prof-body{display:block}
-.pq{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line-soft)}
-.pq:last-child{border-bottom:none}
-.pq .qcheck{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--line);flex-shrink:0;margin-top:1px;
-  display:grid;place-items:center;font-size:12px;color:#fff;transition:.14s}
-.pq.done .qcheck{background:var(--teal);border-color:var(--teal)}
-.pq .qt{flex:1;font-size:13.5px}
-.pq .qt .cat{font-size:10.5px;font-family:'JetBrains Mono';color:var(--amber-deep);font-weight:600;
-  text-transform:uppercase;letter-spacing:.04em}
-.pq .qt .q{margin-top:2px;color:#2A3855;line-height:1.4}
-.pq.done .qt .q{color:var(--slate);text-decoration:line-through;text-decoration-color:var(--line)}
-.pq .wl{font-size:10.5px;font-family:'JetBrains Mono';color:var(--slate);flex-shrink:0;margin-top:2px}
-
-/* bottom nav (mobile) */
-.botnav{display:none}
-
-/* responsive */
-@media(max-width:860px){
-  .app{grid-template-columns:1fr}
-  .rail{display:none}
-  .main{padding:20px 16px 88px}
-  .topbar h2{font-size:24px}
-  .cols-4{grid-template-columns:repeat(2,1fr)}
-  .cols-3{grid-template-columns:1fr}
-  .cols-2{grid-template-columns:1fr}
-  .botnav{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--ink);z-index:40;
-    padding:8px 6px calc(8px + env(safe-area-inset-bottom));justify-content:space-around;
-    box-shadow:0 -4px 18px rgba(0,0,0,.18)}
-  .botnav button{display:flex;flex-direction:column;align-items:center;gap:3px;color:#8294B0;
-    font-size:10px;font-weight:600;padding:5px 9px;border-radius:9px;flex:1}
-  .botnav button .ic{font-size:18px}
-  .botnav button.active{color:var(--amber)}
-  .mobile-ready{display:flex !important}
-}
-@media(min-width:861px){.mobile-only{display:none}}
-.mobile-ready{display:none}
-.hidden{display:none !important}
+  /* Composer */
+  .composer{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(180deg,transparent,var(--paper) 22%);padding:18px 16px 16px}
+  .composer .inner{max-width:880px;margin:0 auto;display:flex;gap:8px;align-items:flex-end}
+  .composer textarea{
+    flex:1;resize:none;font-family:var(--body);font-size:14.5px;line-height:1.5;padding:12px 14px;
+    border:1px solid var(--line);border-radius:13px;background:var(--card);box-shadow:var(--shadow);max-height:140px;
+  }
+  .composer textarea:focus{outline:2px solid var(--teal);outline-offset:0;border-color:transparent}
+  .send{background:var(--ink);color:#fff;border:none;border-radius:12px;padding:0 16px;height:46px;font-weight:600;font-size:14px}
+  .send:disabled{opacity:.4}
+  .bar2{max-width:880px;margin:8px auto 0;display:flex;gap:8px;justify-content:center}
+  .bar2 button{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 12px;font-size:12.5px;font-weight:500;color:var(--ink)}
+  .bar2 button:hover{border-color:var(--ink-3)}
+  .empty{color:var(--muted);font-size:14px;text-align:center;padding:40px 0;line-height:1.6}
+  .empty b{color:var(--ink)}
+  a.inl{color:var(--teal);text-decoration:none;border-bottom:1px solid var(--teal-soft)}
 </style>
 </head>
 <body>
-<div class="app">
-  <!-- RAIL -->
-  <aside class="rail">
-    <div class="brand">
-      <div class="mark disp">C</div>
-      <h1>Casebook Cockpit<span>Placement Prep</span></h1>
-    </div>
-    <button class="nav-item active" data-view="dashboard"><span class="ic">◎</span> Dashboard</button>
-    <button class="nav-item" data-view="cases"><span class="ic">▦</span> Cases</button>
-    <button class="nav-item" data-view="guess"><span class="ic">≈</span> Guesstimates</button>
-    <button class="nav-item" data-view="industries"><span class="ic">⬡</span> Industry Knowledge</button>
-    <button class="nav-item" data-view="profile"><span class="ic">◑</span> Profile Builder</button>
-    <div class="rail-foot">
-      <b>Proof of concept.</b> Progress is saved on this device. Case content stays in your own copy of the casebook — this indexes & schedules it.
-    </div>
-  </aside>
+<div class="wrap">
+  <header>
+    <div class="mark">C·C</div>
+    <div class="title">Case Practice Engine<small>casebook cockpit · live interviewer</small></div>
+    <div class="grow"></div>
+    <button class="iconbtn" id="setupBtn">⚙ Setup</button>
+  </header>
 
-  <!-- MAIN -->
-  <main class="main" id="main"></main>
+  <!-- SETUP -->
+  <section class="setup" id="setup">
+    <h2>Connection</h2>
+    <div class="field">
+      <label for="pass">Access passcode</label>
+      <input id="pass" type="password" placeholder="passcode from the admin" autocomplete="off" spellcheck="false" />
+      <span class="hint">Enter the passcode you were given. The OpenAI key lives on the server, never in your browser — no key needed here. Leave blank if the admin hasn't set a passcode.</span>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="model">Model</label>
+        <select id="model">
+          <option value="gpt-4o-mini">gpt-4o-mini — cheap, fast (recommended)</option>
+          <option value="gpt-4o">gpt-4o — sharper, costlier</option>
+          <option value="gpt-4.1-mini">gpt-4.1-mini</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>&nbsp;</label>
+        <button class="iconbtn" id="saveKey" style="justify-content:center;height:40px">Save</button>
+      </div>
+    </div>
+    <span class="hint" id="keyState"></span>
+  </section>
+
+  <!-- PICKER -->
+  <div class="picker" id="picker"></div>
+
+  <!-- STAGE -->
+  <main class="stage" id="stage">
+    <div class="empty" id="empty">
+      Pick a case above to begin. The interviewer gives you the prompt, then waits.<br>
+      <b>You drive.</b> Ask for clarification, lay out a structure, request data — it releases only what you ask for.
+    </div>
+  </main>
 </div>
 
-<!-- bottom nav -->
-<nav class="botnav">
-  <button class="active" data-view="dashboard"><span class="ic">◎</span>Home</button>
-  <button data-view="cases"><span class="ic">▦</span>Cases</button>
-  <button data-view="guess"><span class="ic">≈</span>Guess</button>
-  <button data-view="industries"><span class="ic">⬡</span>Industry</button>
-  <button data-view="profile"><span class="ic">◑</span>Profile</button>
-</nav>
-
-<!-- modal -->
-<div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
+<!-- COMPOSER -->
+<div class="composer" id="composer" style="display:none">
+  <div class="inner">
+    <textarea id="input" rows="1" placeholder="Your turn… (Enter to send, Shift+Enter for newline)"></textarea>
+    <button class="send" id="send">Send</button>
+  </div>
+  <div class="bar2">
+    <button id="revealBtn">👁 Reveal answer</button>
+    <button id="scoreBtn">✓ End &amp; score</button>
+    <button id="resetBtn">↺ Restart case</button>
+  </div>
+</div>
 
 <script>
-const DATA = {"cases": [{"id": "C01", "no": 1, "title": "Delhi Metro Network", "type": "Profitability", "domain": "Transport & Infra", "framework": "Profitability tree", "page": 47, "difficulty": "Med"}, {"id": "C02", "no": 2, "title": "Five Star Hotel", "type": "Profitability", "domain": "Hospitality & Travel", "framework": "Profitability tree", "page": 49, "difficulty": "Easy"}, {"id": "C03", "no": 3, "title": "Car Insurance Company", "type": "Profitability", "domain": "Financial Services", "framework": "Profitability tree", "page": 52, "difficulty": "Med"}, {"id": "C04", "no": 4, "title": "Tractor Insurance Provider", "type": "Profitability", "domain": "Financial Services", "framework": "Profitability tree", "page": 54, "difficulty": "Med"}, {"id": "C05", "no": 5, "title": "Large Insurance Multinational", "type": "Profitability", "domain": "Financial Services", "framework": "Profitability tree", "page": 57, "difficulty": "Hard"}, {"id": "C06", "no": 6, "title": "Beer Manufacturer", "type": "Profitability", "domain": "FMCG", "framework": "Profitability tree", "page": 60, "difficulty": "Med"}, {"id": "C07", "no": 7, "title": "Kirana Store Owner", "type": "Profitability", "domain": "Retail", "framework": "Profitability tree", "page": 62, "difficulty": "Easy"}, {"id": "C08", "no": 8, "title": "Light Bulb Manufacturer", "type": "Profitability", "domain": "Manufacturing", "framework": "Profitability tree", "page": 64, "difficulty": "Med"}, {"id": "C09", "no": 9, "title": "Bakery Shop", "type": "Profitability", "domain": "Retail", "framework": "Profitability tree", "page": 66, "difficulty": "Easy"}, {"id": "C10", "no": 10, "title": "French Museum", "type": "Profitability", "domain": "Hospitality & Travel", "framework": "Profitability tree", "page": 68, "difficulty": "Med"}, {"id": "C11", "no": 11, "title": "BPO Company", "type": "Profitability", "domain": "IT & ITES", "framework": "Profitability tree", "page": 70, "difficulty": "Med"}, {"id": "C12", "no": 12, "title": "High-End Restaurant", "type": "Profitability", "domain": "Hospitality & Travel", "framework": "Profitability tree", "page": 73, "difficulty": "Med"}, {"id": "C13", "no": 13, "title": "Hospital Chain", "type": "Profitability", "domain": "Healthcare", "framework": "Profitability tree", "page": 75, "difficulty": "Med"}, {"id": "C14", "no": 14, "title": "Flower Shop", "type": "Profitability", "domain": "Retail", "framework": "Profitability tree", "page": 78, "difficulty": "Easy"}, {"id": "C15", "no": 15, "title": "Thermal Power Plant", "type": "Profitability", "domain": "Power & Energy", "framework": "Profitability tree", "page": 80, "difficulty": "Hard"}, {"id": "C16", "no": 16, "title": "Hotel Chain – Value Added Services", "type": "Profitability", "domain": "Hospitality & Travel", "framework": "Profitability tree", "page": 82, "difficulty": "Med"}, {"id": "C17", "no": 17, "title": "Resort in Goa", "type": "Profitability", "domain": "Hospitality & Travel", "framework": "Profitability tree", "page": 85, "difficulty": "Med"}, {"id": "C18", "no": 18, "title": "Deodorant Company", "type": "Profitability", "domain": "FMCG", "framework": "Profitability tree", "page": 87, "difficulty": "Med"}, {"id": "C19", "no": 19, "title": "Delhi Airport", "type": "Profitability", "domain": "Aviation", "framework": "Profitability tree", "page": 90, "difficulty": "Hard"}, {"id": "C20", "no": 20, "title": "Paper Manufacturing Company", "type": "Profitability", "domain": "Manufacturing", "framework": "Profitability tree", "page": 92, "difficulty": "Med"}, {"id": "C21", "no": 21, "title": "Automobile Sales", "type": "Profitability", "domain": "Automobile", "framework": "Profitability tree", "page": 94, "difficulty": "Med"}, {"id": "C22", "no": 22, "title": "Church in Spain", "type": "Profitability", "domain": "Cross-Industry", "framework": "Profitability tree", "page": 96, "difficulty": "Hard"}, {"id": "C23", "no": 23, "title": "Restaurant Profitability", "type": "Profitability", "domain": "Hospitality & Travel", "framework": "Profitability tree", "page": 99, "difficulty": "Easy"}, {"id": "C24", "no": 24, "title": "Call Centre Company", "type": "Profitability", "domain": "IT & ITES", "framework": "Profitability tree", "page": 101, "difficulty": "Med"}, {"id": "C25", "no": 25, "title": "Firecrackers", "type": "Profitability", "domain": "Manufacturing", "framework": "Profitability tree", "page": 103, "difficulty": "Med"}, {"id": "C26", "no": 26, "title": "Edible Oil Manufacturer", "type": "Market Entry", "domain": "FMCG", "framework": "Market Entry", "page": 109, "difficulty": "Med"}, {"id": "C27", "no": 27, "title": "Bike Taxi Launch", "type": "Market Entry", "domain": "Transport & Infra", "framework": "Market Entry", "page": 111, "difficulty": "Med"}, {"id": "C28", "no": 28, "title": "Chemical Company", "type": "Market Entry", "domain": "Manufacturing", "framework": "Market Entry", "page": 114, "difficulty": "Hard"}, {"id": "C29", "no": 29, "title": "Ice Cream Franchise", "type": "Market Entry", "domain": "FMCG", "framework": "Market Entry", "page": 117, "difficulty": "Easy"}, {"id": "C30", "no": 30, "title": "Automobile Manufacturer", "type": "Market Entry", "domain": "Automobile", "framework": "Market Entry", "page": 119, "difficulty": "Med"}, {"id": "C31", "no": 31, "title": "Contact Lens", "type": "Market Entry", "domain": "Healthcare", "framework": "Market Entry", "page": 123, "difficulty": "Med"}, {"id": "C32", "no": 32, "title": "Raymond – Online Entry", "type": "Market Entry", "domain": "Retail", "framework": "Market Entry", "page": 127, "difficulty": "Med"}, {"id": "C33", "no": 33, "title": "Joka Battery Manufacturer", "type": "Market Entry", "domain": "Manufacturing", "framework": "Market Entry", "page": 132, "difficulty": "Hard"}, {"id": "C34", "no": 34, "title": "Korean Fertilizer Manufacturer", "type": "Pricing", "domain": "Manufacturing", "framework": "Pricing", "page": 137, "difficulty": "Hard"}, {"id": "C35", "no": 35, "title": "Toothbrush Manufacturer", "type": "Pricing", "domain": "FMCG", "framework": "Pricing", "page": 139, "difficulty": "Med"}, {"id": "C36", "no": 36, "title": "Teleporting Machine", "type": "Pricing", "domain": "Cross-Industry", "framework": "Pricing", "page": 141, "difficulty": "Hard"}, {"id": "C37", "no": 37, "title": "Global Event Pricing", "type": "Pricing", "domain": "Sports & Entertainment", "framework": "Pricing", "page": 143, "difficulty": "Med"}, {"id": "C38", "no": 38, "title": "Expressway Pricing", "type": "Pricing", "domain": "Transport & Infra", "framework": "Pricing", "page": 145, "difficulty": "Med"}, {"id": "C39", "no": 39, "title": "Perpetual Light Bulb", "type": "Pricing", "domain": "Manufacturing", "framework": "Pricing", "page": 148, "difficulty": "Hard"}, {"id": "C40", "no": 40, "title": "Global Car Pricing", "type": "Pricing", "domain": "Automobile", "framework": "Pricing", "page": 151, "difficulty": "Hard"}, {"id": "C41", "no": 41, "title": "Automobile Parts Manufacturer", "type": "Growth", "domain": "Automobile", "framework": "Growth / Ansoff", "page": 156, "difficulty": "Med"}, {"id": "C42", "no": 42, "title": "Consulting Firm", "type": "Growth", "domain": "Cross-Industry", "framework": "Growth / Ansoff", "page": 158, "difficulty": "Med"}, {"id": "C43", "no": 43, "title": "Flipkart", "type": "Growth", "domain": "E-Commerce", "framework": "Growth / Ansoff", "page": 160, "difficulty": "Med"}, {"id": "C44", "no": 44, "title": "South African Telecom Operator", "type": "Growth", "domain": "Telecommunication", "framework": "Growth / Ansoff", "page": 163, "difficulty": "Hard"}, {"id": "C45", "no": 45, "title": "Online Travel Aggregator", "type": "Growth", "domain": "Hospitality & Travel", "framework": "Growth / Ansoff", "page": 165, "difficulty": "Med"}, {"id": "C46", "no": 46, "title": "SaaS Firm", "type": "Growth", "domain": "IT & ITES", "framework": "Growth / Ansoff", "page": 168, "difficulty": "Med"}, {"id": "C47", "no": 47, "title": "Pharmaceutical Industry", "type": "Growth", "domain": "Pharmaceutical", "framework": "Growth / Ansoff", "page": 170, "difficulty": "Hard"}, {"id": "C48", "no": 48, "title": "Industrial Park", "type": "Growth", "domain": "Real Estate", "framework": "Growth / Ansoff", "page": 172, "difficulty": "Med"}, {"id": "C49", "no": 49, "title": "Diagnostic Company", "type": "Growth", "domain": "Healthcare", "framework": "Growth / Ansoff", "page": 174, "difficulty": "Med"}, {"id": "C50", "no": 50, "title": "Basketball League Growth", "type": "Growth", "domain": "Sports & Entertainment", "framework": "Growth / Ansoff", "page": 176, "difficulty": "Med"}, {"id": "C51", "no": 51, "title": "Game Launch", "type": "Growth", "domain": "IT & ITES", "framework": "Growth / Ansoff", "page": 178, "difficulty": "Med"}, {"id": "C52", "no": 52, "title": "IT Services", "type": "Unconventional", "domain": "IT & ITES", "framework": "M&A / Synergy", "page": 183, "difficulty": "Hard"}, {"id": "C53", "no": 53, "title": "Google MSMEs", "type": "Unconventional", "domain": "IT & ITES", "framework": "Case Themes", "page": 185, "difficulty": "Hard"}, {"id": "C54", "no": 54, "title": "Oil Manufacturer", "type": "Unconventional", "domain": "Oil & Gas", "framework": "Case Themes", "page": 187, "difficulty": "Hard"}, {"id": "C55", "no": 55, "title": "Consulting Firm", "type": "Unconventional", "domain": "Cross-Industry", "framework": "Case Themes", "page": 190, "difficulty": "Hard"}, {"id": "C56", "no": 56, "title": "VC Firm", "type": "Unconventional", "domain": "Financial Services", "framework": "Case Themes", "page": 192, "difficulty": "Hard"}, {"id": "C57", "no": 57, "title": "Education Ministry", "type": "Unconventional", "domain": "Public Sector", "framework": "Case Themes", "page": 194, "difficulty": "Hard"}, {"id": "C58", "no": 58, "title": "Ministry of Road Transport & Highways", "type": "Unconventional", "domain": "Public Sector", "framework": "Case Themes", "page": 196, "difficulty": "Hard"}, {"id": "C59", "no": 59, "title": "Ministry of Travel & Tourism", "type": "Unconventional", "domain": "Public Sector", "framework": "Case Themes", "page": 198, "difficulty": "Hard"}, {"id": "C60", "no": 60, "title": "Founder of an Analytics Firm", "type": "Unconventional", "domain": "IT & ITES", "framework": "Case Themes", "page": 201, "difficulty": "Hard"}, {"id": "C61", "no": 61, "title": "Lemonade Stand", "type": "Unconventional", "domain": "Retail", "framework": "Case Themes", "page": 203, "difficulty": "Easy"}, {"id": "C62", "no": 62, "title": "Airline Profitability", "type": "Unconventional", "domain": "Aviation", "framework": "Profitability tree", "page": 205, "difficulty": "Med"}, {"id": "C63", "no": 63, "title": "Factory Diversity", "type": "Unconventional", "domain": "Manufacturing", "framework": "Case Themes", "page": 207, "difficulty": "Med"}, {"id": "C64", "no": 64, "title": "Home Loan Portfolio", "type": "Unconventional", "domain": "Banking", "framework": "Case Themes", "page": 209, "difficulty": "Hard"}, {"id": "C65", "no": 65, "title": "Truck Fleet", "type": "Unconventional", "domain": "Transport & Infra", "framework": "Case Themes", "page": 212, "difficulty": "Med"}, {"id": "C66", "no": 66, "title": "Blade-o-blade", "type": "Unconventional", "domain": "Cross-Industry", "framework": "Case Themes", "page": 214, "difficulty": "Hard"}, {"id": "C67", "no": 67, "title": "Off to War", "type": "Unconventional", "domain": "Cross-Industry", "framework": "Case Themes", "page": 217, "difficulty": "Hard"}], "guesstimates": [{"id": "G01", "title": "Cars sold in India per year", "type": "Market sizing", "domain": "Automobile", "difficulty": "Med", "hint": "Population → households → income segments → ownership & replacement rate."}, {"id": "G02", "title": "Cups of chai consumed in India per day", "type": "Demand-side", "domain": "FMCG", "difficulty": "Easy", "hint": "Population → % tea drinkers → cups per person per day."}, {"id": "G03", "title": "Size of online food-delivery market (India)", "type": "Market sizing", "domain": "E-Commerce", "difficulty": "Med", "hint": "Urban internet users → orders/user/month → average order value."}, {"id": "G04", "title": "LPG cylinders used in a city per month", "type": "Demand-side", "domain": "Oil & Gas", "difficulty": "Med", "hint": "Households → % using LPG → cylinders per household per month."}, {"id": "G05", "title": "ATMs needed in a tier-1 city", "type": "Supply-side", "domain": "Banking", "difficulty": "Med", "hint": "Population → account holders → transactions/day ÷ ATM capacity."}, {"id": "G06", "title": "Flights departing Delhi airport per day", "type": "Supply-side", "domain": "Aviation", "difficulty": "Med", "hint": "Runways × operations/hour × operating hours × utilisation."}, {"id": "G07", "title": "Barber shops in Mumbai", "type": "Supply-side", "domain": "Retail", "difficulty": "Easy", "hint": "Population → haircuts/person/month ÷ chairs × capacity."}, {"id": "G08", "title": "Annual revenue of one multiplex screen", "type": "Revenue build", "domain": "Sports & Entertainment", "difficulty": "Med", "hint": "Seats × shows/day × occupancy × ticket + F&B, × 365."}, {"id": "G09", "title": "Smartphones sold in India per year", "type": "Market sizing", "domain": "Telecommunication", "difficulty": "Med", "hint": "Population → addressable users → replacement cycle."}, {"id": "G10", "title": "EV charging points on Mumbai–Pune e-way", "type": "Supply-side", "domain": "Power & Energy", "difficulty": "Hard", "hint": "Traffic/day → EV % → charge events ÷ charger throughput."}, {"id": "G11", "title": "Litres of water used in a stadium per IPL match", "type": "Demand-side", "domain": "Sports & Entertainment", "difficulty": "Med", "hint": "Spectators × usage + pitch/ops + concessions."}, {"id": "G12", "title": "School teachers in India", "type": "Supply-side", "domain": "Education", "difficulty": "Med", "hint": "Children 6–18 → enrolment → pupil-teacher ratio."}], "industries": [{"name": "Automobile", "metrics": "Units sold, ASP, capacity utilisation", "regulator": "—", "page": 19}, {"name": "Aviation", "metrics": "Load factor, RPK/ASK, yield", "regulator": "DGCA", "page": 20}, {"name": "Cement", "metrics": "Capacity, realisation/tonne", "regulator": "—", "page": 21}, {"name": "E-Commerce", "metrics": "GMV, AOV, take rate, CAC", "regulator": "—", "page": 22}, {"name": "Financial Services", "metrics": "AUM, NIM, cost-to-income", "regulator": "SEBI / IRDAI", "page": 23}, {"name": "Banking", "metrics": "NIM, CASA, GNPA, ROA", "regulator": "RBI", "page": 24}, {"name": "FMCG", "metrics": "Volume growth, gross margin", "regulator": "—", "page": 25}, {"name": "Iron & Steel", "metrics": "Crude steel output, spread/tonne", "regulator": "—", "page": 26}, {"name": "IT & ITES", "metrics": "Billing rate, utilisation, attrition", "regulator": "—", "page": 27}, {"name": "Metals & Mining", "metrics": "Production, EBITDA/tonne", "regulator": "—", "page": 28}, {"name": "Oil & Gas", "metrics": "GRM, throughput", "regulator": "PNGRB", "page": 29}, {"name": "Pharmaceutical", "metrics": "R&D %, ANDA filings", "regulator": "CDSCO", "page": 30}, {"name": "Power & Energy", "metrics": "PLF, tariff, AT&C losses", "regulator": "CERC", "page": 31}, {"name": "Telecommunication", "metrics": "ARPU, subscribers, churn", "regulator": "TRAI", "page": 32}], "profile": [{"id": "S05", "name": "HR Answers", "icon": "💬", "qs": [{"cat": "Segue", "q": "Tell me/ us about yourself (TMAY)", "wl": "200 - 250"}, {"cat": "Segue", "q": "Walk me/ us through your profile", "wl": "201 - 250"}, {"cat": "Finding Relevance", "q": "Create an SOP from the perspective of a pre MBA candidate (100 words)", "wl": "100.0"}, {"cat": "Finding Relevance", "q": "Create an SOP from the perspective of a pre MBA candidate (500 words)", "wl": "500.0"}, {"cat": "Finding Relevance", "q": "Create an SOP from the perspective of a pre MBA candidate (750 words)", "wl": "750.0"}, {"cat": "Finding Relevance", "q": "What are you planning to do with your life in the next 2 years on campus, during your\n internship and where are you planning to head towards at the end of this course?", "wl": "200 - 250"}, {"cat": "Finding Relevance", "q": "How are these linked to your short and long term goals?", "wl": "200 - 250"}, {"cat": "Finding Relevance", "q": "What are your 3 major accomplishments? 1. Professional 2. Personal", "wl": "200 - 250"}, {"cat": "Finding Relevance", "q": "Describe any event / situation in your life which has impacted/ influenced you significantly.", "wl": "200 - 250"}, {"cat": "Finding Relevance", "q": "Describe a situation where you initiated a new idea or approach and implemented it. How did you go about it?", "wl": "200 - 250"}]}, {"id": "S06", "name": "Behavioural", "icon": "🧭", "qs": [{"cat": "LEARN AND BE CURIOUS", "q": "What is the coolest thing you have learned on your own which has helped you perform better at your job?", "wl": "100.0"}, {"cat": "LEARN AND BE CURIOUS", "q": "Tell me about a time when you realized you needed to have a deeper understanding of subject matter expertise to do your job well?", "wl": "100.0"}, {"cat": "LEARN AND BE CURIOUS", "q": "Tell me a time when you took on work outside your comfort area and found it rewarding? Tell me when you didn’t know what to do next or how to solve a challenging problem?", "wl": "100.0"}, {"cat": "EARN TRUST", "q": "What three things are you working on to improve your overall effectiveness?", "wl": "100.0"}, {"cat": "EARN TRUST", "q": "Tell me about a time when you had to balance the customer's needs vs. the needs of the business. How did you manage this situation?", "wl": "100.0"}, {"cat": "EARN TRUST", "q": "Describe a time when you significantly contributed to improving the morale and productivity of your team. What were the underlying problems and their causes? How did you prevent from negatively impacting the team in the future?", "wl": "100.0"}, {"cat": "DELIVER RESULTS", "q": "Tell me about a goal you set that took a long to achieve or that you are still working towards that? How do you keep focused on the plan, given the other priorities that you have?", "wl": "100.0"}, {"cat": "DELIVER RESULTS", "q": "Tell me about an initiative you undertook because you saw that it could benefit the whole company or your customers but wasn't within any group's responsibility, so nothing was being done?", "wl": "100.0"}, {"cat": "THINK BIG", "q": "Give me an example of a radical approach to a problem you proposed. What was the problem, and why did you feel it required a completely different way of thinking about it? Was your approach successful?", "wl": "100.0"}, {"cat": "THINK BIG", "q": "Tell me about a time when you were working on an initiative or a goal and saw an opportunity to do something much bigger than the initial focus?", "wl": "100.0"}]}, {"id": "S04", "name": "Current Affairs", "icon": "📰", "qs": [{"cat": "Political", "q": "Any 5 recent important events from your City/ State (PESTLE perspective)", "wl": "200.0"}, {"cat": "Economical", "q": "Recent Economical development", "wl": "200.0"}, {"cat": "Social", "q": "Recent Social development", "wl": "200.0"}, {"cat": "Technological", "q": "Recent Technological development", "wl": "200.0"}, {"cat": "Enviromental", "q": "Recent Enviromental development", "wl": "200.0"}, {"cat": "Legal", "q": "Recent Legal development", "wl": "200.0"}, {"cat": "Political", "q": "Any 5 recent important events from other City/ State(s) you have been associated with (PESTLE perspective)", "wl": "200.0"}, {"cat": "Economical", "q": "Recent Economical development", "wl": "200.0"}]}, {"id": "S08", "name": "Insti-Specific Apps", "icon": "🏛️", "qs": [{"cat": "IIM Ahmedabad", "q": "Any achievement in your job that you would like to share in support of your application", "wl": ""}, {"cat": "IIM Ahmedabad", "q": "Describe the nature of responsibility (workex)", "wl": ""}, {"cat": "IIM Ahmedabad", "q": "Reason for discontinuity (gaps)", "wl": ""}, {"cat": "IIM Ahmedabad", "q": "Reflecting on work experience, describe something that you would have done differently", "wl": ""}, {"cat": "IIM Bangalore", "q": "Statement of purpose", "wl": ""}, {"cat": "IIM Calcutta", "q": "State reasons for leaving your job", "wl": ""}, {"cat": "IIM Calcutta", "q": "List out your hobbies with brief description (Not more than 2)", "wl": ""}, {"cat": "IIM Calcutta", "q": "Career goals (Not more than 100 words)", "wl": ""}, {"cat": "IIM Calcutta", "q": "Extra Curricular Activities", "wl": ""}, {"cat": "FMS", "q": "Statement of Purpose", "wl": ""}, {"cat": "FMS", "q": "Experience Details", "wl": ""}, {"cat": "FMS", "q": "Extra Curricular Activity", "wl": ""}]}, {"id": "S07", "name": "Professional Skills", "icon": "🛠️", "qs": [{"cat": "Marketing", "q": "Digital Marketing — evidence & story", "wl": ""}, {"cat": "Marketing", "q": "Content Marketing — evidence & story", "wl": ""}, {"cat": "Marketing", "q": "Social Media Marketing — evidence & story", "wl": ""}, {"cat": "Marketing", "q": "Market Research — evidence & story", "wl": ""}, {"cat": "Marketing", "q": "Marketing Analytics — evidence & story", "wl": ""}, {"cat": "Finance", "q": "Financial Modeling — evidence & story", "wl": ""}, {"cat": "Finance", "q": "Investment Banking — evidence & story", "wl": ""}, {"cat": "Finance", "q": "Risk Management — evidence & story", "wl": ""}, {"cat": "Finance", "q": "Accounting — evidence & story", "wl": ""}, {"cat": "Finance", "q": "Treasury Management — evidence & story", "wl": ""}]}, {"id": "S01", "name": "Profile Snapshot", "icon": "👤", "qs": [{"cat": "BTRIBE ID", "q": "Prepare: BTRIBE ID", "wl": ""}, {"cat": "Full Name", "q": "1) Meaning of your name 2) Famous people who share the same name", "wl": "-"}, {"cat": "LinkedIn", "q": "Prepare: LinkedIn", "wl": "-"}, {"cat": "Master's degree (if applicable)", "q": "1) Why MBA after masters?", "wl": "100+"}, {"cat": "Bachelor's degree", "q": "Refer UG Tab", "wl": "-"}, {"cat": "Bachelor's college name", "q": "1) College history", "wl": "100+"}, {"cat": "School board", "q": "NA", "wl": ""}]}], "domains": ["Automobile", "Aviation", "Banking", "Cross-Industry", "E-Commerce", "FMCG", "Financial Services", "Healthcare", "Hospitality & Travel", "IT & ITES", "Manufacturing", "Oil & Gas", "Pharmaceutical", "Power & Energy", "Public Sector", "Real Estate", "Retail", "Sports & Entertainment", "Telecommunication", "Transport & Infra"], "caseTypes": ["Profitability", "Market Entry", "Pricing", "Growth", "Unconventional"], "difficulties": ["Easy", "Med", "Hard"]};
-const SR_INTERVALS = {1:1, 2:3, 3:7, 4:16, 5:35}; // days, by confidence
-const STATUS_RANK = {"Mastered":4,"Reviewed":3,"Attempting":2,"Not started":1};
-
-const FW_SCAFFOLD = {
-  "Profitability tree":[
-    "Profit = Revenue − Cost. Confirm which is falling (or both) before structuring.",
-    "Revenue = Volume × Price. Split by product / segment / channel / geography.",
-    "Cost = Fixed + Variable. Walk the value chain; isolate the largest movable cost.",
-    "Find the broken branch, quantify the gap, then drill to root cause — internal vs external."
-  ],
-  "Market Entry":[
-    "Is the market attractive? Size, growth, profitability, competitive intensity.",
-    "Can we win? Capabilities, cost position, brand, distribution fit.",
-    "How to enter? Organic build vs JV vs acquire — speed, control, risk trade-off.",
-    "Financials & risks: break-even, investment, regulatory, exit option."
-  ],
-  "Pricing":[
-    "Three lenses: cost-plus (price floor), competition (market reference), value (ceiling = willingness to pay).",
-    "Pick the basis: commoditised → competition; differentiated → value-based.",
-    "Segment customers by WTP; check price elasticity and cannibalisation.",
-    "Stress-test against capacity, objectives (share vs margin) and competitor response."
-  ],
-  "Growth / Ansoff":[
-    "Map four boxes: existing/new products × existing/new markets.",
-    "Penetration & market development are usually lower-risk; diversification highest.",
-    "Score each option on attractiveness × feasibility; sequence them.",
-    "Tie to the client's objective, time horizon and capital available."
-  ],
-  "Case Themes":[
-    "No template fits — build a custom MECE structure from first principles.",
-    "State the objective and success metric explicitly before diving in.",
-    "Lay out 3–4 mutually exclusive buckets; pressure-test exhaustiveness.",
-    "Quantify where you can; flag assumptions; end with a clear recommendation."
-  ],
-  "M&A / Synergy":[
-    "Strategic rationale: why buy vs build? What gap does it close?",
-    "Target screen → standalone value → revenue & cost synergies.",
-    "Price & financing; accretion/dilution; downside case.",
-    "Integration plan & key risks (culture, systems, regulatory)."
-  ]
-};
-
-/* ---------- persistence ---------- */
-let store = {progress:{}, profile:{}};
-function load(){
-  try{const r=localStorage.getItem('cockpit_v1'); if(r) store=JSON.parse(r);}catch(e){}
-}
-function save(){
-  try{localStorage.setItem('cockpit_v1', JSON.stringify(store));}catch(e){/* in-memory only */}
-}
-load();
-// seed a little demo progress on first run
-if(Object.keys(store.progress).length===0){
-  const seed={"C01":5,"C03":4,"C06":2,"C19":3,"G01":5,"G05":3};
-  const today=new Date();
-  for(const [id,c] of Object.entries(seed)){
-    const last=new Date(today); last.setDate(last.getDate()-[2,6,1,9,3,1][Object.keys(seed).indexOf(id)]);
-    store.progress[id]=mkProgress(c, last);
+/* ============================================================================
+   CASE PACKS  —  KEEP THIS BLOCK LOCAL / PRIVATE
+   ----------------------------------------------------------------------------
+   The ENGINE below (everything under "ENGINE") is original and safe to host
+   publicly. THIS data block is content. The Delhi Metro pack uses only the
+   facts + a paraphrased framework, NOT the casebook's verbatim text, so it is
+   safe. If you ever paste raw casebook prose in here for offline use, add this
+   file to .gitignore and do NOT push it to GitHub Pages.
+   ----------------------------------------------------------------------------
+   Schema (same shape for every type — this is what makes the engine reusable):
+     id, type ('case' | 'guesstimate'), title, industry,
+     prompt        : the one line you read to the candidate
+     facts[]       : {ask, reveal}  — released ONLY when the candidate asks for it
+     answer_key    : the strong path, paraphrased (engine uses it to judge, never states it)
+     structure     : the hidden decision tree (shown on Reveal)
+     recs          : recommendations (shown on Reveal)
+   Add a new case = add an object here. No engine change needed.
+   ========================================================================== */
+const CASE_PACKS = [
+  {
+    id:"dmrc-cp",
+    type:"case",
+    title:"Delhi Metro Network",
+    industry:"Transport / Infrastructure",
+    prompt:"The Delhi Metro network is facing profitability issues. Figure out why, and suggest recommendations.",
+    facts:[
+      {ask:"how long / how big is the gap", reveal:"It has been present since inception, and the profit gap is considerable."},
+      {ask:"revenue sources / other income", reveal:"Revenue is mainly from metro operations. There is also a consulting arm advising other metro projects worldwide, but the problem shows up only in metro operations."},
+      {ask:"is it network-wide or one station", reveal:"The issue is isolated to a single station — Connaught Place (CP)."},
+      {ask:"cost side vs revenue side", reveal:"It is a revenue shortfall, not a cost problem. You may ignore costs for now."},
+      {ask:"which revenue streams to consider", reveal:"Consider tickets, advertisements and outlets. You can exclude consulting revenue."},
+      {ask:"which stream is the problem", reveal:"Outlet revenue at CP is below comparable stations; tickets and ads are in line."},
+      {ask:"what drives outlet revenue", reveal:"Outlet revenue = number of outlet units × occupancy rate × rent per outlet."},
+      {ask:"number of outlet units vs other stations", reveal:"Same number of outlet units as other stations."},
+      {ask:"rent per outlet vs other stations", reveal:"Rent is higher at high-traffic stations like CP — yet CP's overall outlet revenue is lower. That points to low occupancy, not rent."},
+      {ask:"what makes a franchisee take an outlet (occupancy drivers)", reveal:"A franchisee weighs location branding/awareness, awareness of tenders, admin requirements, outlet location within the station, contract terms and expected revenue. Assume awareness and expected revenue are fine — look at contract terms."},
+      {ask:"contract / rent-agreement terms", reveal:"Terms include rent, security deposit and lock-in period. Rent is the same, so look at deposit and lock-in."},
+      {ask:"lock-in period / the root cause", reveal:"ROOT CAUSE: the lock-in period at CP is 12 months versus 6 months at other stations. Franchisees avoid the longer commitment, so outlets sit vacant → low occupancy → lower outlet revenue."}
+    ],
+    answer_key:
+      "Frame profit = revenue − cost; interviewer says ignore cost → revenue problem. Localise to CP station. "+
+      "Break revenue into tickets / advertisements / outlets → outlets is the gap. Decompose outlet revenue = units × occupancy × rent/outlet. "+
+      "Units are equal and rent is not the lever (it's higher at CP yet revenue is lower) → occupancy is low. "+
+      "Diagnose occupancy via a franchisee's decision factors → narrow to contract terms → lock-in period. "+
+      "Root cause: CP lock-in is 12 months vs 6 months elsewhere, deterring franchisees.",
+    structure:
+      "Profit\n"+
+      "├─ Cost  (interviewer: ignore)\n"+
+      "└─ Revenue  ◀ focus\n"+
+      "   ├─ Tickets\n"+
+      "   ├─ Advertisements\n"+
+      "   └─ Outlets  ◀ the gap\n"+
+      "      = Units × Occupancy rate × Rent/outlet\n"+
+      "        ├─ Units  → same as peers\n"+
+      "        ├─ Rent   → higher, not the cause\n"+
+      "        └─ Occupancy  ◀ low\n"+
+      "           └─ Franchisee decision factors\n"+
+      "              └─ Contract terms\n"+
+      "                 ├─ Rent (same)\n"+
+      "                 ├─ Security deposit\n"+
+      "                 └─ Lock-in period ◀ 12m vs 6m  ★ ROOT CAUSE",
+    recs:[
+      "Investigate why CP's lock-in is 12 months and reduce it toward the 6-month norm if feasible.",
+      "If the 12-month lock-in can't move, lower rent to compensate franchisees for the longer commitment.",
+      "Introduce differential pricing: higher rent for a short lock-in, lower rent for a long lock-in — let franchisees self-select."
+    ]
+  },
+  /* ---- Original guesstimate, written from scratch → safe to host. Proves the
+         same engine runs a totally different interview type with zero code change. */
+  {
+    id:"chargers-jaipur",
+    type:"guesstimate",
+    title:"EV chargers for a city",
+    industry:"Energy / Mobility",
+    prompt:"Estimate how many public EV charging points a city of about 4 million people needs in 5 years. Walk me through your logic.",
+    facts:[
+      {ask:"how many people / households", reveal:"Assume ~4 million people, ~4 per household → ~1 million households."},
+      {ask:"car ownership / EV share", reveal:"Assume ~30% of households own a car today, and ~20% of those cars are EVs in 5 years."},
+      {ask:"home vs public charging split", reveal:"Assume ~60% of EV owners charge at home; the rest rely on public charging."},
+      {ask:"how many EVs one public point serves", reveal:"Assume one public charging point adequately serves ~10 public-reliant EVs."}
+    ],
+    answer_key:
+      "Sound path: households (~1M) → car-owning (~300k) → EVs in 5y (~60k) → public-reliant share (~40% ≈ 24k) "+
+      "→ divide by EVs-per-point (~10) ≈ ~2,400 public charging points. Reward a clean multiplicative tree, "+
+      "explicit assumptions, and a sanity check (order of magnitude in the low thousands, not lakhs).",
+    structure:
+      "Public charging points needed\n"+
+      "= Households\n"+
+      "  × car-owning %\n"+
+      "  × EV % (in 5 years)\n"+
+      "  × public-reliant %\n"+
+      "  ÷ EVs served per point\n"+
+      "≈ 1,000,000 × 0.30 × 0.20 × 0.40 ÷ 10  ≈  ~2,400 points",
+    recs:[
+      "State each assumption out loud and flag which one the answer is most sensitive to (EV % and public-reliant %).",
+      "Close with a sanity check on order of magnitude, not just a point number."
+    ]
   }
-  save();
-}
-function mkProgress(conf, lastDate){
-  const last = lastDate||new Date();
-  const next = new Date(last); next.setDate(next.getDate()+ (SR_INTERVALS[conf]||3));
-  const status = conf>=5?"Mastered": conf>=3?"Reviewed":"Attempting";
-  return {confidence:conf, status, last:last.toISOString(), next:next.toISOString(),
-          attempts:(1)};
-}
-function statusOf(id){return (store.progress[id]&&store.progress[id].status)||"Not started";}
-function isDue(id){const p=store.progress[id]; if(!p||!p.next) return false; return new Date(p.next)<=new Date();}
-function dueIn(id){const p=store.progress[id]; if(!p||!p.next) return null;
-  const d=Math.ceil((new Date(p.next)-new Date())/(864e5)); return d;}
+];
 
-/* ---------- view state ---------- */
-let view='dashboard';
-let filters={domain:new Set(), type:new Set(), diff:new Set(), status:new Set()};
+/* Per-type interview flow + rubric. Adding a new type = add an entry here. */
+const TYPE_CONFIG = {
+  case:{
+    phases:["clarify scope","lay out a structure","drill into the driver","synthesise & recommend"],
+    rubric:[
+      "Scoping & clarification — localised the problem (e.g. one station), separated revenue vs cost",
+      "Structure / MECE — clean, exhaustive, non-overlapping driver tree",
+      "Hypothesis-driven — followed the signal, did not laundry-list options",
+      "Quant comfort — decomposed drivers multiplicatively and reasoned with them",
+      "Synthesis & recommendations — clear root cause + actionable, creative recs"
+    ]
+  },
+  guesstimate:{
+    phases:["decompose","state assumptions","calculate","sanity-check"],
+    rubric:[
+      "Decomposition — broke the number into a clean multiplicative tree",
+      "Assumptions — reasonable, explicit, defensible figures",
+      "Arithmetic — calculation is correct and easy to follow",
+      "Sanity check — pressure-tested the order of magnitude at the end",
+      "Communication — narrated the logic clearly throughout"
+    ]
+  }
+};
+
+/* ============================================================================
+   ENGINE  —  original, content-agnostic. Safe to host publicly.
+   Knows nothing about "Delhi Metro" or "EV chargers" — only about case packs.
+   ========================================================================== */
 const $=s=>document.querySelector(s);
-const main=$('#main');
+const state={ caseId:null, messages:[], busy:false };
 
-function setView(v){
-  view=v; filters={domain:new Set(),type:new Set(),diff:new Set(),status:new Set()};
-  document.querySelectorAll('.nav-item,[data-view]').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
-  render(); window.scrollTo(0,0);
+/* ---- passcode / model storage (no API key in the browser) ---- */
+const PASS_LS="cpe.pass", MODEL_LS="cpe.model";
+function loadCfg(){
+  $("#pass").value=localStorage.getItem(PASS_LS)||"";
+  $("#model").value=localStorage.getItem(MODEL_LS)||"gpt-4o-mini";
+  refreshKeyState();
 }
-document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));
-
-/* ---------- render router ---------- */
-function render(){
-  if(view==='dashboard') return renderDash();
-  if(view==='cases') return renderCases();
-  if(view==='guess') return renderGuess();
-  if(view==='industries') return renderIndustries();
-  if(view==='profile') return renderProfile();
+function refreshKeyState(){
+  const p=localStorage.getItem(PASS_LS);
+  $("#keyState").textContent = p ? "✓ Passcode saved." : "Ready. Enter a passcode if the admin set one.";
 }
+$("#setupBtn").onclick=()=>$("#setup").classList.toggle("open");
+$("#saveKey").onclick=()=>{
+  localStorage.setItem(PASS_LS,$("#pass").value.trim());
+  localStorage.setItem(MODEL_LS,$("#model").value);
+  refreshKeyState();
+  $("#setup").classList.remove("open");
+};
 
-/* ---------- dashboard ---------- */
-function pct(n,d){return d? Math.round(100*n/d):0;}
-function renderDash(){
-  const cases=DATA.cases;
-  const mastered=cases.filter(c=>statusOf(c.id)==='Mastered').length;
-  const inprog=cases.filter(c=>['Attempting','Reviewed'].includes(statusOf(c.id))).length;
-  const readiness=pct(mastered, cases.length);
-  // due queue across cases + guesstimates
-  const allItems=[...cases.map(c=>({id:c.id,title:c.title,tag:c.id})),
-                  ...DATA.guesstimates.map(g=>({id:g.id,title:g.title,tag:g.id}))];
-  const due=allItems.filter(i=>isDue(i.id)).sort((a,b)=>(dueIn(a.id))-(dueIn(b.id)));
-  // by type
-  const byType=DATA.caseTypes.map(t=>{
-    const cs=cases.filter(c=>c.type===t);
-    const m=cs.filter(c=>['Mastered','Reviewed'].includes(statusOf(c.id))).length;
-    return {t, m, n:cs.length, p:pct(m,cs.length)};
+/* ---- picker ---- */
+function buildPicker(){
+  const p=$("#picker");
+  CASE_PACKS.forEach(c=>{
+    const b=document.createElement("button");
+    b.className="chip"; b.dataset.type=c.type; b.dataset.id=c.id;
+    b.innerHTML=`<span class="tag">${c.type}</span>${c.title}`;
+    b.onclick=()=>startCase(c.id);
+    p.appendChild(b);
   });
-  // profile readiness
-  let pqTotal=0, pqDone=0;
-  DATA.profile.forEach(s=>s.qs.forEach((q,i)=>{pqTotal++; if(store.profile[s.id+'_'+i]) pqDone++;}));
+}
 
-  main.innerHTML=`
-  <div class="topbar">
-    <div>
-      <div class="eyebrow">IIM-C Casebook 2024-25 · Ed.5</div>
-      <h2>Your readiness cockpit</h2>
-      <p>Practise with active recall, then let spaced repetition decide what comes back. ${due.length} item${due.length!==1?'s':''} due today.</p>
+/* ---- system prompt builder (the heart) ---- */
+function buildSystemPrompt(c){
+  const cfg=TYPE_CONFIG[c.type];
+  const facts=c.facts.map((f,i)=>`  [${i+1}] If they ask about "${f.ask}": ${f.reveal}`).join("\n");
+  const phases=cfg.phases.map((p,i)=>`${i+1}. ${p}`).join("  →  ");
+  return (
+`You are a top-tier management-consulting interviewer (McKinsey/BCG/Bain style) running a LIVE ${c.type} interview. The candidate is practising for placements. Stay fully in character as the interviewer.
+
+THE PROMPT YOU GIVE (say this first, verbatim-ish, then stop and wait):
+"${c.prompt}"
+
+DATA YOU HOLD — reveal a point ONLY when the candidate specifically asks a question that targets it. Never volunteer data. Never dump the list. If they ask vaguely, nudge them to be specific rather than handing it over:
+${facts}
+
+THE STRONG PATH (for YOUR judgement only — NEVER state it, NEVER hint the route):
+${c.answer_key}
+
+INTERVIEW RULES:
+1. First message: give the prompt and nothing else. Then wait for them.
+2. Make them drive. Do not lead. If they propose a structure, pressure-test it: "why that bucket?", "is that exhaustive?", "what would you check first and why?".
+3. Release one relevant fact per question, tied to what they asked. If they guess the answer without earning it, ask them to justify the path.
+4. If they go down a reasonable-but-wrong branch, let them — only redirect after they're clearly stuck for ~2 turns, and redirect with a QUESTION, not the answer.
+5. Keep your turns short and real — usually 1–2 sentences, like a person across the table. No bullet-point lectures.
+6. Silently track the phase: ${phases}. As the case nears its end, push them to synthesise and give a recommendation.
+7. NEVER reveal the answer, the structure, or that you are an AI. If — and only if — the candidate sends the exact text "/reveal", you may confirm the root cause.
+
+Begin now with the prompt.`);
+}
+
+/* ---- API call (single seam) — calls OUR proxy at /api/chat.
+   The OpenAI key lives server-side as an env var and never reaches the browser. */
+async function callLLM(messages,{json=false,temperature=0.7}={}){
+  const model=localStorage.getItem(MODEL_LS)||"gpt-4o-mini";
+  const body={model,messages,temperature};
+  if(json) body.response_format={type:"json_object"};
+  const headers={"Content-Type":"application/json"};
+  const pass=localStorage.getItem(PASS_LS);
+  if(pass) headers["x-app-passcode"]=pass;
+  const res=await fetch("/api/chat",{
+    method:"POST",
+    headers,
+    body:JSON.stringify(body)
+  });
+  if(!res.ok){
+    const t=await res.text().catch(()=> "");
+    if(res.status===401) throw new Error("BAD_PASS");
+    throw new Error("API "+res.status+": "+t.slice(0,200));
+  }
+  const data=await res.json();
+  return data.choices?.[0]?.message?.content ?? "";
+}
+
+/* ---- rendering ---- */
+function caseObj(){ return CASE_PACKS.find(c=>c.id===state.caseId); }
+function addMsg(role,text){
+  const feed=$("#feed");
+  const m=document.createElement("div");
+  m.className="msg "+(role==="assistant"?"ai":"me");
+  m.innerHTML=`<div class="who">${role==="assistant"?"INT":"YOU"}</div><div class="bubble"></div>`;
+  m.querySelector(".bubble").textContent=text;
+  feed.appendChild(m); scrollDown();
+}
+function showTyping(on){
+  let t=$("#typing");
+  if(on){
+    if(t) return;
+    const feed=$("#feed");
+    const m=document.createElement("div"); m.id="typing"; m.className="msg ai";
+    m.innerHTML=`<div class="who">INT</div><div class="bubble"><span class="typing"><i></i><i></i><i></i></span></div>`;
+    feed.appendChild(m); scrollDown();
+  } else if(t){ t.remove(); }
+}
+function scrollDown(){ window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"}); }
+
+/* ---- case lifecycle ---- */
+async function startCase(id){
+  state.caseId=id; state.messages=[]; state.busy=false;
+  const c=caseObj();
+  document.querySelectorAll(".chip").forEach(ch=>ch.classList.toggle("active",ch.dataset.id===id));
+  $("#empty").style.display="none";
+  $("#composer").style.display="block";
+  const stage=$("#stage");
+  stage.innerHTML=`
+    <div class="casehead">
+      <div class="k">${c.type} · ${c.industry}</div>
+      <h3>${c.title}</h3>
     </div>
-    <div class="ready-chip">
-      <div class="ring" style="--p:${readiness};position:relative;display:grid;place-items:center">
-        <b class="disp">${readiness}%</b></div>
-      <div><div class="lbl">Case readiness</div><div class="val">${mastered}/${cases.length} mastered</div></div>
-    </div>
-  </div>
-
-  <div class="grid cols-4">
-    <div class="stat"><div class="edge" style="background:var(--teal)"></div>
-      <div class="k">Cases mastered</div><div class="v">${mastered}</div><div class="sub">of ${cases.length} in library</div></div>
-    <div class="stat"><div class="edge" style="background:var(--amber)"></div>
-      <div class="k">In progress</div><div class="v">${inprog}</div><div class="sub">attempting or reviewing</div></div>
-    <div class="stat"><div class="edge" style="background:var(--hard)"></div>
-      <div class="k">Due for review</div><div class="v">${due.length}</div><div class="sub">surfaced by spacing</div></div>
-    <div class="stat"><div class="edge" style="background:var(--ink)"></div>
-      <div class="k">Profile answers</div><div class="v">${pqDone}</div><div class="sub">of ${pqTotal} prepared</div></div>
-  </div>
-
-  <div class="grid cols-2" style="margin-top:18px;align-items:start">
-    <div class="panel panel-p">
-      <div class="section-h" style="margin:0 0 8px"><h3>Due for review</h3>
-        <button class="btn btn-amber mobile-only" onclick="practiceNext()" style="padding:6px 12px;font-size:12px">Practise next</button></div>
-      <p style="font-size:12.5px;color:var(--slate);margin-bottom:14px">The spacing engine resurfaces items just before you'd forget them. Clear these first.</p>
-      <div id="dueList">${ due.length? due.slice(0,6).map(i=>{
-          const di=dueIn(i.id);
-          return `<div class="due-item" onclick="openItem('${i.id}')">
-            <span class="tag">${i.tag}</span><span class="t">${i.title}</span>
-            <span class="when">${di<=0?'DUE':di+'d'}</span></div>`;
-        }).join('') : `<div style="padding:24px;text-align:center;color:var(--slate);font-size:13px">Nothing due — you're ahead. Start a fresh case from the Cases tab.</div>`}</div>
-      <button class="btn btn-primary" style="margin-top:6px;width:100%;justify-content:center" onclick="practiceNext()">▷ Start a mixed practice session</button>
-    </div>
-
-    <div class="panel panel-p">
-      <div class="section-h" style="margin:0 0 14px"><h3>Mastery by case type</h3></div>
-      ${byType.map(b=>`<div class="bar-row">
-        <span class="nm">${b.t}</span>
-        <span class="bar"><i style="width:${b.p}%"></i></span>
-        <span class="pct">${b.m}/${b.n}</span></div>`).join('')}
-      <div class="bar-row" style="border-top:2px solid var(--line);margin-top:6px;padding-top:14px">
-        <span class="nm" style="color:var(--amber-deep)">Profile bank</span>
-        <span class="bar"><i style="width:${pct(pqDone,pqTotal)}%;background:var(--amber)"></i></span>
-        <span class="pct">${pqDone}/${pqTotal}</span></div>
-    </div>
-  </div>`;
+    <div class="feed" id="feed"></div>
+    <div class="sys" id="sys"></div>`;
+  buildReveal(c);
+  state.messages=[{role:"system",content:buildSystemPrompt(c)}];
+  await aiTurn();
+}
+async function aiTurn(){
+  if(state.busy) return; state.busy=true; $("#send").disabled=true;
+  showTyping(true);
+  try{
+    const out=await callLLM(state.messages,{temperature:0.7});
+    showTyping(false);
+    state.messages.push({role:"assistant",content:out});
+    addMsg("assistant",out);
+  }catch(e){ showTyping(false); handleErr(e); }
+  state.busy=false; $("#send").disabled=false;
+}
+async function sendTurn(){
+  const ta=$("#input"); const text=ta.value.trim();
+  if(!text||state.busy||!state.caseId) return;
+  ta.value=""; ta.style.height="auto";
+  state.messages.push({role:"user",content:text});
+  addMsg("user",text);
+  await aiTurn();
+}
+function handleErr(e){
+  const sys=$("#sys");
+  if(e.message==="BAD_PASS"){ sys.textContent="Passcode rejected — check it under ⚙ Setup."; $("#setup").classList.add("open"); }
+  else if(e.message.startsWith("Failed to fetch")||e.message.includes("NetworkError")){
+    sys.textContent="Network/CORS blocked the call. If the browser won't allow a direct OpenAI call, route through a tiny proxy (see notes).";
+  } else { sys.textContent=e.message; }
 }
 
-function practiceNext(){
-  const pool=[...DATA.cases, ...DATA.guesstimates];
-  const due=pool.filter(i=>isDue(i.id));
-  const fresh=DATA.cases.filter(c=>statusOf(c.id)==='Not started');
-  const pick = due[0] || fresh[Math.floor(Math.random()*fresh.length)] || pool[0];
-  openItem(pick.id);
-}
-
-/* ---------- filters UI ---------- */
-function chip(label, group, value, amber){
-  const on=filters[group].has(value);
-  return `<button class="chip ${on?'on':''} ${amber&&on?'amber':''}" onclick="toggleFilter('${group}','${value.replace(/'/g,"\\'")}')">${label}</button>`;
-}
-window.toggleFilter=(g,v)=>{filters[g].has(v)?filters[g].delete(v):filters[g].add(v); render();};
-window.clearFilters=()=>{filters={domain:new Set(),type:new Set(),diff:new Set(),status:new Set()};render();};
-
-function casePasses(c){
-  if(filters.domain.size && !filters.domain.has(c.domain)) return false;
-  if(filters.type.size && !filters.type.has(c.type)) return false;
-  if(filters.diff.size && !filters.diff.has(c.difficulty)) return false;
-  if(filters.status.size){const s=isDue(c.id)?'Due':statusOf(c.id); if(!filters.status.has(s)) return false;}
-  return true;
-}
-
-/* ---------- cases ---------- */
-function renderCases(){
-  const domains=[...new Set(DATA.cases.map(c=>c.domain))].sort();
-  const list=DATA.cases.filter(casePasses);
-  const active=filters.domain.size+filters.type.size+filters.diff.size+filters.status.size;
-  main.innerHTML=`
-  <div class="topbar"><div>
-    <div class="eyebrow">${DATA.cases.length} cases · 5 types · ${domains.length} domains</div>
-    <h2>Case library</h2>
-    <p>Toggle filters to build a focused set, open a case, attempt it cold, then reveal the framework scaffold.</p>
-  </div></div>
-
-  <div class="filters">
-    <div class="filter-group"><div class="glbl">⬡ Domain ${filters.domain.size?`· ${filters.domain.size} on`:''}</div>
-      <div class="chips">${domains.map(d=>chip(d,'domain',d,true)).join('')}</div></div>
-    <div class="filter-group"><div class="glbl">▦ Case type</div>
-      <div class="chips">${DATA.caseTypes.map(t=>chip(t,'type',t)).join('')}</div></div>
-    <div class="filter-group" style="display:flex;gap:30px;flex-wrap:wrap">
-      <div><div class="glbl">Difficulty</div><div class="chips">${DATA.difficulties.map(d=>chip(d==='Med'?'Medium':d,'diff',d)).join('')}</div></div>
-      <div><div class="glbl">Status</div><div class="chips">${['Due','Not started','Attempting','Reviewed','Mastered'].map(s=>chip(s,'status',s)).join('')}</div></div>
-      ${active?`<button class="clear" onclick="clearFilters()" style="align-self:flex-end;margin-left:auto">Clear all (${active})</button>`:''}
-    </div>
-  </div>
-
-  <div class="results-meta"><b>${list.length}</b> case${list.length!==1?'s':''} shown</div>
-  <div class="case-grid">
-    ${list.map(c=>caseCard(c)).join('') || `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--slate)">No cases match these filters. <button class="clear" onclick="clearFilters()">Clear</button></div>`}
-  </div>`;
-}
-function caseCard(c){
-  const st=statusOf(c.id), due=isDue(c.id);
-  return `<div class="ccard" onclick="openItem('${c.id}')">
-    <div class="row1"><span class="cid">${c.id}</span>
-      ${due?`<span class="due-flag">DUE</span>`:''}</div>
-    <div class="title">${c.title}</div>
-    <div class="meta"><span class="pill type">${c.type}</span>
-      <span class="pill diff-${c.difficulty}">${c.difficulty==='Med'?'Medium':c.difficulty}</span></div>
-    <div class="foot">
-      <span class="status-dot st-${st.replace(' ','')}"><span class="d"></span>${st}</span>
-      <span style="font-size:11px;color:var(--slate)" class="mono">p.${c.page}</span></div>
-  </div>`;
-}
-
-/* ---------- guesstimates ---------- */
-function guessPasses(g){
-  if(filters.domain.size && !filters.domain.has(g.domain)) return false;
-  if(filters.diff.size && !filters.diff.has(g.difficulty)) return false;
-  return true;
-}
-function renderGuess(){
-  const domains=[...new Set(DATA.guesstimates.map(g=>g.domain))].sort();
-  const list=DATA.guesstimates.filter(guessPasses);
-  main.innerHTML=`
-  <div class="topbar"><div>
-    <div class="eyebrow">${DATA.guesstimates.length} market-sizing drills</div>
-    <h2>Guesstimates</h2>
-    <p>Estimate the number out loud first. Only then open the approach hint and rate how close your structure was.</p>
-  </div></div>
-  <div class="filters">
-    <div class="filter-group"><div class="glbl">⬡ Domain</div>
-      <div class="chips">${domains.map(d=>chip(d,'domain',d,true)).join('')}</div></div>
-    <div class="filter-group"><div class="glbl">Difficulty</div>
-      <div class="chips">${DATA.difficulties.map(d=>chip(d==='Med'?'Medium':d,'diff',d)).join('')}</div></div>
-  </div>
-  <div class="results-meta"><b>${list.length}</b> drills shown</div>
-  <div class="case-grid">${list.map(g=>{
-    const st=statusOf(g.id),due=isDue(g.id);
-    return `<div class="ccard" onclick="openItem('${g.id}')">
-      <div class="row1"><span class="cid">${g.id}</span>${due?`<span class="due-flag">DUE</span>`:''}</div>
-      <div class="title">${g.title}</div>
-      <div class="meta"><span class="pill type">${g.type}</span>
-        <span class="pill diff-${g.difficulty}">${g.difficulty==='Med'?'Medium':g.difficulty}</span>
-        <span class="pill">${g.domain}</span></div>
-      <div class="foot"><span class="status-dot st-${st.replace(' ','')}"><span class="d"></span>${st}</span></div>
-    </div>`;
-  }).join('')}</div>`;
-}
-
-/* ---------- industries ---------- */
-function renderIndustries(){
-  main.innerHTML=`
-  <div class="topbar"><div>
-    <div class="eyebrow">${DATA.industries.length} industry primers</div>
-    <h2>Industry knowledge</h2>
-    <p>Quick-reference structure for each sector — value chain, the metrics that matter, and the regulator. Fill the detail from your notes.</p>
-  </div></div>
-  <div class="grid cols-3">${DATA.industries.map(i=>`
-    <div class="ind-card">
-      <h4>${i.name} ${i.regulator!=='—'?`<span class="reg">${i.regulator}</span>`:''}</h4>
-      <div class="ind-row"><span class="l">Key metrics</span><span>${i.metrics}</span></div>
-      <div class="ind-row"><span class="l">Value chain</span><span style="color:var(--slate)">add from notes →</span></div>
-      <div class="ind-row"><span class="l">Casebook</span><span class="mono" style="font-size:12px">p.${i.page}</span></div>
-    </div>`).join('')}</div>`;
-}
-
-/* ---------- profile ---------- */
-function renderProfile(){
-  main.innerHTML=`
-  <div class="topbar"><div>
-    <div class="eyebrow">Master profile builder · ${DATA.profile.reduce((a,s)=>a+s.qs.length,0)}+ prompts</div>
-    <h2>Profile builder</h2>
-    <p>Work through each section. Tick a prompt once you have a tight, rehearsed answer. (Full 239-question bank lives in the Excel database.)</p>
-  </div></div>
-  ${DATA.profile.map((s,si)=>{
-    const done=s.qs.filter((q,i)=>store.profile[s.id+'_'+i]).length;
-    return `<div class="prof-section" id="ps_${si}">
-      <div class="prof-head" onclick="document.getElementById('ps_${si}').classList.toggle('open')">
-        <span class="ic">${s.icon}</span>
-        <span class="nm">${s.name}</span>
-        <span class="pbar"><i style="width:${pct(done,s.qs.length)}%"></i></span>
-        <span class="cnt">${done}/${s.qs.length}</span>
-        <span class="chev">▸</span>
+/* ---- reveal (blur-to-reveal, matches the platform's active-recall pattern) ---- */
+function buildReveal(c){
+  const stage=$("#stage");
+  const d=document.createElement("details"); d.className="reveal"; d.id="reveal";
+  const recs=c.recs.map(r=>`<li>${r}</li>`).join("");
+  d.innerHTML=`
+    <summary><span class="tag">hidden</span> Answer &amp; structure — click to reveal</summary>
+    <div class="body">
+      <div class="blur">
+        <h4>Structure</h4>
+        <div class="tree">${c.structure}</div>
+        <h4>Root cause / path</h4>
+        <div>${c.answer_key}</div>
+        <h4>Recommendations</h4>
+        <ul>${recs}</ul>
       </div>
-      <div class="prof-body">
-        ${s.qs.map((q,i)=>{
-          const key=s.id+'_'+i, on=!!store.profile[key];
-          return `<div class="pq ${on?'done':''}" onclick="toggleQ('${key}')">
-            <div class="qcheck">${on?'✓':''}</div>
-            <div class="qt"><div class="cat">${q.cat||''}</div><div class="q">${q.q}</div></div>
-            ${q.wl?`<div class="wl">${(''+q.wl).replace('.0','')}w</div>`:''}
-          </div>`;
-        }).join('')}
-      </div></div>`;
-  }).join('')}`;
+    </div>`;
+  stage.appendChild(d);
 }
-window.toggleQ=(key)=>{store.profile[key]=!store.profile[key]; if(!store.profile[key])delete store.profile[key]; save();
-  const sec=document.querySelector('.prof-section.open'); renderProfile();
-  if(sec){const id=sec.id; const el=document.getElementById(id); if(el)el.classList.add('open');}};
 
-/* ---------- item modal (case or guesstimate) ---------- */
-let current=null;
-function findItem(id){return DATA.cases.find(c=>c.id===id)||DATA.guesstimates.find(g=>g.id===id);}
-window.openItem=(id)=>{
-  const it=findItem(id); if(!it) return; current=id;
-  const isCase=id[0]==='C';
-  const fw=isCase? it.framework : 'Guesstimate';
-  const scaffold = isCase? (FW_SCAFFOLD[it.framework]||FW_SCAFFOLD["Case Themes"]) :
-    ["State the final number's structure first (e.g. supply-side vs demand-side).",
-     "Break the population / base into segments you can size.",
-     "Apply rates per segment; keep round numbers; multiply up.",
-     "Sanity-check the magnitude against something you know."];
-  const st=statusOf(id);
-  const sheet=$('#sheet');
-  sheet.innerHTML=`
-   <div class="sheet-h">
-     <button class="x" onclick="closeSheet()">✕</button>
-     <div class="cid">${it.id} · ${isCase?it.type:it.type} ${isCase?'· '+it.domain:'· '+it.domain}</div>
-     <h3>${it.title}</h3>
-     <div class="kv">
-       ${isCase?`<span class="pill type">${it.framework}</span>`:''}
-       <span class="pill diff-${it.difficulty}">${it.difficulty==='Med'?'Medium':it.difficulty}</span>
-       ${isCase?`<span class="pill">Casebook p.${it.page}</span>`:''}
-       <span class="status-dot st-${st.replace(' ','')}" style="margin-left:4px"><span class="d"></span>${st}</span>
-     </div>
-   </div>
-   <div class="sheet-body">
-     <div class="lead">${isCase?
-        `Set this up as if it's a live interview: read the prompt to your partner, ask clarifying questions, then <b>structure your approach before revealing anything below.</b>`:
-        `Say your <b>estimate and its structure out loud</b> before you reveal the approach. The reveal is a scaffold, not the answer.`}</div>
+/* ---- scoring → JSON → feeds your SR confidence ladder ---- */
+async function endAndScore(){
+  if(!state.caseId||state.busy) return;
+  const c=caseObj(); const cfg=TYPE_CONFIG[c.type];
+  state.busy=true; $("#send").disabled=true;
+  const sys=$("#sys"); sys.textContent="Scoring the transcript…";
+  const transcript=state.messages.filter(m=>m.role!=="system")
+    .map(m=>(m.role==="assistant"?"INTERVIEWER":"CANDIDATE")+": "+m.content).join("\n");
+  const rubric=cfg.rubric.map((r,i)=>`${i+1}. ${r}`).join("\n");
+  const scoreMsgs=[
+    {role:"system",content:"You are a strict but fair case-interview scorer. Return ONLY valid JSON, no prose."},
+    {role:"user",content:
+`Score this ${c.type} interview transcript against the rubric. Be honest — most practice attempts are "developing" or "solid", not "mastered".
 
-     <div class="attempt-box">
-       <div class="step-h"><span class="n">1</span> Attempt it cold</div>
-       <div class="btn-row">
-         <div class="timer mono" id="timer">00:00</div>
-         <button class="btn btn-ghost" id="timerBtn" onclick="toggleTimer()">▷ Start timer</button>
-         <span style="font-size:12px;color:var(--slate)">Target: ${isCase?'20–25 min':'4–6 min'}</span>
-       </div>
-     </div>
+RUBRIC (score each 1–5):
+${rubric}
 
-     <div class="step-h"><span class="n">2</span> Reveal the ${isCase?'framework scaffold':'approach'}</div>
-     <div class="reveal-wrap">
-       <div class="reveal-content locked" id="revealC">
-         ${scaffold.map((s,i)=>`<div class="scaffold-step"><span class="b">${i+1}</span><span>${s}</span></div>`).join('')}
-         ${isCase?`<div class="book-ref">📖 <span>Compare your structure with the full worked solution in the casebook — <b>page ${it.page}</b>.</span></div>`:
-                  `<div class="book-ref">💡 <span><b>Hint:</b> ${it.hint}</span></div>`}
-       </div>
-       <div class="reveal-veil" id="veil">
-         <span class="lk">🔒</span>
-         <p>Structure your own answer first. Revealing before you attempt defeats the recall benefit.</p>
-         <button class="btn btn-amber" onclick="reveal()">I've attempted it — reveal</button>
-       </div>
-     </div>
+THE STRONG PATH (ground truth): ${c.answer_key}
 
-     <div class="rate" id="rateBox">
-       <div class="step-h"><span class="n">3</span> Rate your confidence — sets the next review</div>
-       <div class="rate-btns">
-         ${[[1,'Lost'],[2,'Shaky'],[3,'OK'],[4,'Solid'],[5,'Nailed it']].map(([n,c])=>
-           `<button class="rate-btn" data-n="${n}" onclick="rate(${n})"><span class="num">${n}</span><span class="cap">${c}</span></button>`).join('')}
-       </div>
-       <div class="sched-note" id="schedNote"></div>
-     </div>
-   </div>`;
-  $('#scrim').classList.add('open');
-  stopTimer(); timerSec=0; $('#timer')&&($('#timer').textContent='00:00');
-};
-window.closeSheet=()=>{$('#scrim').classList.remove('open'); stopTimer(); render();};
-$('#scrim').onclick=(e)=>{if(e.target.id==='scrim')closeSheet();};
+TRANSCRIPT:
+${transcript}
 
-window.reveal=()=>{$('#revealC').classList.remove('locked'); $('#veil').classList.add('hide');};
+Return JSON exactly:
+{"dimensions":[{"name":"<short rubric name>","score":<1-5>,"note":"<one line of evidence>"}],
+ "overall":<1-5 one decimal>,
+ "ladder":"<one of: shaky|developing|solid|strong|mastered>",
+ "strengths":["..."],
+ "improvements":["..."]}`}
+  ];
+  try{
+    const out=await callLLM(scoreMsgs,{json:true,temperature:0.2});
+    let data; try{ data=JSON.parse(out); }catch{ data=JSON.parse(out.replace(/```json|```/g,"").trim()); }
+    renderScore(data); sys.textContent="";
+  }catch(e){ handleErr(e); }
+  state.busy=false; $("#send").disabled=false;
+}
+function renderScore(d){
+  const stage=$("#stage");
+  const dims=(d.dimensions||[]).map(x=>`
+    <div class="dim"><div class="nm">${x.name}</div>
+      <div class="bar"><i style="width:${(x.score/5)*100}%"></i></div>
+      <div class="sc">${x.score}/5</div></div>
+    <div class="dimnote">${x.note||""}</div>`).join("");
+  const str=(d.strengths||[]).map(s=>`<li>${s}</li>`).join("");
+  const imp=(d.improvements||[]).map(s=>`<li>${s}</li>`).join("");
+  const lad=(d.ladder||"developing").toLowerCase();
+  const el=document.createElement("div"); el.className="score";
+  el.innerHTML=`
+    <h3>Scorecard — overall ${d.overall ?? "—"}/5</h3>
+    <span class="ladder ${lad}">${lad}</span>
+    ${dims}
+    <div class="cols">
+      <div><h4>Strengths</h4><ul>${str||"<li>—</li>"}</ul></div>
+      <div><h4>Work on</h4><ul>${imp||"<li>—</li>"}</ul></div>
+    </div>`;
+  stage.appendChild(el); scrollDown();
+  // structured payload for your spaced-repetition engine:
+  console.log("CPE_SCORE",JSON.stringify({caseId:state.caseId,...d}));
+}
 
-/* timer */
-let timerSec=0, timerInt=null;
-function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
-window.toggleTimer=()=>{
-  const btn=$('#timerBtn');
-  if(timerInt){stopTimer(); btn.textContent='▷ Resume';}
-  else{timerInt=setInterval(()=>{timerSec++; $('#timer').textContent=fmt(timerSec);},1000); btn.textContent='❚❚ Pause';}
-};
-function stopTimer(){if(timerInt){clearInterval(timerInt);timerInt=null;}}
+/* ---- composer wiring ---- */
+const input=$("#input");
+input.addEventListener("input",()=>{ input.style.height="auto"; input.style.height=Math.min(input.scrollHeight,140)+"px"; });
+input.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); sendTurn(); }});
+$("#send").onclick=sendTurn;
+$("#revealBtn").onclick=()=>{ const r=$("#reveal"); if(r){ r.open=!r.open; r.scrollIntoView({behavior:"smooth",block:"center"}); }};
+$("#scoreBtn").onclick=endAndScore;
+$("#resetBtn").onclick=()=>{ if(state.caseId) startCase(state.caseId); };
 
-/* rating → schedule */
-window.rate=(n)=>{
-  document.querySelectorAll('.rate-btn').forEach(b=>b.classList.toggle('sel', +b.dataset.n===n));
-  // ensure revealed
-  reveal();
-  const today=new Date();
-  store.progress[current]=mkProgress(n, today);
-  save();
-  const days=SR_INTERVALS[n];
-  const next=new Date(today); next.setDate(next.getDate()+days);
-  const note=$('#schedNote');
-  note.classList.add('show');
-  note.textContent=`✓ Saved as “${store.progress[current].status}”. Next review in ${days} day${days>1?'s':''} (${next.toLocaleDateString('en-IN',{day:'numeric',month:'short'})}).`;
-};
-
-setView('dashboard');
+/* ---- init ---- */
+loadCfg(); buildPicker();
 </script>
 </body>
 </html>
