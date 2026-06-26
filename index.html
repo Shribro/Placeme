@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Case Practice Engine — Casebook Cockpit</title>
+<title>Delhi Metro Case</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -157,16 +157,25 @@
   .empty{color:var(--muted);font-size:14px;text-align:center;padding:40px 0;line-height:1.6}
   .empty b{color:var(--ink)}
   a.inl{color:var(--teal);text-decoration:none;border-bottom:1px solid var(--teal-soft)}
+  .probbar{display:flex;gap:10px;align-items:baseline;margin:12px 0 2px;padding:11px 14px;
+    background:var(--ink);color:#fff;border-radius:12px;box-shadow:var(--shadow)}
+  .probbar .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--amber);flex:none;padding-top:1px}
+  .probbar .txt{font-family:var(--display);font-size:14px;font-weight:500;line-height:1.45}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="mark">C·C</div>
-    <div class="title">Case Practice Engine<small>casebook cockpit · live interviewer</small></div>
+    <div class="title" id="hdrTitle">Delhi Metro Case<small id="hdrSub">live case interviewer</small></div>
     <div class="grow"></div>
     <button class="iconbtn" id="setupBtn">⚙ Setup</button>
   </header>
+  <div class="probbar" id="probbar">
+    <span class="lbl">Problem</span>
+    <span class="txt" id="probText"></span>
+  </div>
 
   <!-- SETUP -->
   <section class="setup" id="setup">
@@ -459,6 +468,7 @@ function scrollDown(){ window.scrollTo({top:document.body.scrollHeight,behavior:
 async function startCase(id){
   state.caseId=id; state.messages=[]; state.busy=false;
   const c=caseObj();
+  setHeader(c);
   document.querySelectorAll(".chip").forEach(ch=>ch.classList.toggle("active",ch.dataset.id===id));
   $("#empty").style.display="none";
   $("#composer").style.display="block";
@@ -590,8 +600,15 @@ $("#revealBtn").onclick=()=>{ const r=$("#reveal"); if(r){ r.open=!r.open; r.scr
 $("#scoreBtn").onclick=endAndScore;
 $("#resetBtn").onclick=()=>{ if(state.caseId) startCase(state.caseId); };
 
+/* ---- header: title tracks the selected case; problem statement stays pinned ---- */
+function setHeader(c){
+  $("#hdrTitle").firstChild.textContent = c.title;
+  $("#hdrSub").textContent = c.type==="guesstimate" ? "live guesstimate interviewer" : "live case interviewer";
+  $("#probText").textContent = c.prompt;
+}
+
 /* ---- init ---- */
-loadCfg(); buildPicker();
+loadCfg(); buildPicker(); setHeader(CASE_PACKS[0]);
 </script>
 </body>
 </html>
