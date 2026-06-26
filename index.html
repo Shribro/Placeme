@@ -179,12 +179,7 @@
 
   <!-- SETUP -->
   <section class="setup" id="setup">
-    <h2>Connection</h2>
-    <div class="field">
-      <label for="pass">Access passcode</label>
-      <input id="pass" type="password" placeholder="passcode from the admin" autocomplete="off" spellcheck="false" />
-      <span class="hint">Enter the passcode you were given. The OpenAI key lives on the server, never in your browser — no key needed here. Leave blank if the admin hasn't set a passcode.</span>
-    </div>
+    <h2>Settings</h2>
     <div class="row">
       <div class="field">
         <label for="model">Model</label>
@@ -199,6 +194,7 @@
         <button class="iconbtn" id="saveKey" style="justify-content:center;height:40px">Save</button>
       </div>
     </div>
+    <span class="hint">The OpenAI key is held on the server (Vercel env var) and is never entered here.</span>
     <span class="hint" id="keyState"></span>
   </section>
 
@@ -359,20 +355,17 @@ const TYPE_CONFIG = {
 const $=s=>document.querySelector(s);
 const state={ caseId:null, messages:[], busy:false };
 
-/* ---- passcode / model storage (no API key in the browser) ---- */
-const PASS_LS="cpe.pass", MODEL_LS="cpe.model";
+/* ---- model storage only. No API key or secret ever lives in the browser. ---- */
+const MODEL_LS="cpe.model";
 function loadCfg(){
-  $("#pass").value=localStorage.getItem(PASS_LS)||"";
   $("#model").value=localStorage.getItem(MODEL_LS)||"gpt-4o-mini";
   refreshKeyState();
 }
 function refreshKeyState(){
-  const p=localStorage.getItem(PASS_LS);
-  $("#keyState").textContent = p ? "✓ Passcode saved." : "Ready. Enter a passcode if the admin set one.";
+  $("#keyState").textContent="Key is server-side. Just pick a case to begin.";
 }
 $("#setupBtn").onclick=()=>$("#setup").classList.toggle("open");
 $("#saveKey").onclick=()=>{
-  localStorage.setItem(PASS_LS,$("#pass").value.trim());
   localStorage.setItem(MODEL_LS,$("#model").value);
   refreshKeyState();
   $("#setup").classList.remove("open");
@@ -420,22 +413,18 @@ Begin now with the prompt.`);
 }
 
 /* ---- API call (single seam) — calls OUR proxy at /api/chat.
-   The OpenAI key lives server-side as an env var and never reaches the browser. */
+   The OpenAI key lives server-side as a Vercel env var and never reaches the browser. */
 async function callLLM(messages,{json=false,temperature=0.7}={}){
   const model=localStorage.getItem(MODEL_LS)||"gpt-4o-mini";
   const body={model,messages,temperature};
   if(json) body.response_format={type:"json_object"};
-  const headers={"Content-Type":"application/json"};
-  const pass=localStorage.getItem(PASS_LS);
-  if(pass) headers["x-app-passcode"]=pass;
   const res=await fetch("/api/chat",{
     method:"POST",
-    headers,
+    headers:{"Content-Type":"application/json"},
     body:JSON.stringify(body)
   });
   if(!res.ok){
     const t=await res.text().catch(()=> "");
-    if(res.status===401) throw new Error("BAD_PASS");
     throw new Error("API "+res.status+": "+t.slice(0,200));
   }
   const data=await res.json();
@@ -505,9 +494,10 @@ async function sendTurn(){
 }
 function handleErr(e){
   const sys=$("#sys");
-  if(e.message==="BAD_PASS"){ sys.textContent="Passcode rejected — check it under ⚙ Setup."; $("#setup").classList.add("open"); }
-  else if(e.message.startsWith("Failed to fetch")||e.message.includes("NetworkError")){
-    sys.textContent="Network/CORS blocked the call. If the browser won't allow a direct OpenAI call, route through a tiny proxy (see notes).";
+  if(e.message.startsWith("API 401")||e.message.startsWith("API 500")){
+    sys.textContent="Server couldn't reach OpenAI — check OPENAI_API_KEY is set in Vercel and redeployed.";
+  } else if(e.message.startsWith("Failed to fetch")||e.message.includes("NetworkError")){
+    sys.textContent="Couldn't reach the server. If you're opening the file locally, the /api/chat proxy only runs on Vercel — deploy first.";
   } else { sys.textContent=e.message; }
 }
 
