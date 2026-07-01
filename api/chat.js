@@ -1,7 +1,21 @@
 // api/chat.js — server-side proxy. The OpenAI key lives here as an env var
-// and never reaches the browser. Vercel runs this automatically at /api/chat.
+// (OPENAI_API_KEY) and never reaches the browser. Vercel serves this at /api/chat.
+//
+// CORS: the browser app is hosted elsewhere (e.g. GitHub Pages), so this must
+// send Access-Control-* headers and answer the OPTIONS preflight — otherwise
+// the browser blocks the call ("Failed to fetch" / "blocked by CORS policy").
 
 export default async function handler(req, res) {
+  // Reflect the caller's origin (no credentials are used, so this is safe).
+  const origin = req.headers.origin || "*";
+  res.setHeader("Access-Control-Allow-Origin", origin);
+  res.setHeader("Vary", "Origin");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // Preflight
+  if (req.method === "OPTIONS") return res.status(204).end();
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "POST only" });
   }
