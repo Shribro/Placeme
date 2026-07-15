@@ -1,4 +1,4 @@
-// api/chat.js — server-side proxy. The OpenAI key lives here as an env var
+// api/chat.js  server-side proxy. The OpenAI key lives here as an env var
 // (OPENAI_API_KEY) and never reaches the browser. Vercel serves this at /api/chat.
 //
 // CORS: the browser app is hosted elsewhere (e.g. GitHub Pages), so this must
