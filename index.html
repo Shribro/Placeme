@@ -6,6 +6,16 @@
 <title>PlaceMe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BYBTE6S17E"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-BYBTE6S17E');
+</script>
+<!-- Supabase client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 
   :root {
@@ -363,8 +373,11 @@ const TYPE_CONFIGS = {
 };
 
 // ===== config =====
-const GOOGLE_CLIENT_ID = "";                 // set to your OAuth client ID for real Google sign-in
-const ADMIN_EMAILS = ["admin@iimu.ac.in"];    // emails that get the admin role
+const ADMIN_EMAILS = ["shricharan.ar@gmail.com", "shricharan.arumugam.2025@iimu.ac.in"]; // emails that get the admin role
+const ALLOWED_DOMAIN = "iimu.ac.in";         // students must sign in with this email domain
+const SUPABASE_URL  = "https://jxksrhvjwdalktrbmpbu.supabase.co";
+const SUPABASE_ANON = "sb_publishable_69U-aP6KEW6oC-mZ56uFeA_IS0ZP9IO";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 const DEFAULT_WEIGHTS = {solution:60, answers:25, time:15};
 const PRACTICE_WEIGHTS = {solution:65, answers:35, time:0};
 
@@ -427,40 +440,104 @@ function seed(){
   save("seeded",true);
 }
 
-// ===== auth =====
-function parseJwt(t){try{return JSON.parse(decodeURIComponent(atob(t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")).split("").map(c=>"%"+("00"+c.charCodeAt(0).toString(16)).slice(-2)).join("")));}catch(e){return null;}}
-function roleFor(email){const u=load("users",{})[email];if(u&&u.role)return u.role;return ADMIN_EMAILS.includes(email)?"admin":"student";}
-function upsertUser(u){const users=load("users",{});users[u.email]={...(users[u.email]||{}),...u};save("users",users);const pr=load("progress",{});if(!pr[u.email]&&u.role==="student"){pr[u.email]={solved:[]};save("progress",pr);}}
-function signIn(profile){
-  const role=roleFor(profile.email);
-  const u={email:profile.email,name:profile.name,picture:profile.picture||"",role};
-  upsertUser(u);
-  save("session",u); state.user=u;
-  state.view = role==="admin" ? "admin-home" : "home";
+// ===== auth (Supabase) =====
+function roleFor(email){ return ADMIN_EMAILS.includes((email||"").toLowerCase()) ? "admin" : "student"; }
+
+function sbLogin(){
+  sb.auth.signInWithOAuth({
+    provider:"google",
+    options:{ redirectTo: window.location.origin, queryParams:{ hd: ALLOWED_DOMAIN } }
+  });
+}
+async function signOut(){
+  await sb.auth.signOut();
+  localStorage.removeItem("pm.session");
+  state.user=null; state.view="login";
+  if(timerHandle)clearInterval(timerHandle);
   render();
 }
-function onGoogleCredential(resp){const p=parseJwt(resp.credential);if(p)signIn({email:p.email,name:p.name,picture:p.picture});}
-function demoLogin(kind){
-  if(kind==="admin") signIn({email:"admin@iimu.ac.in",name:"Placement Admin"});
-  else signIn({email:"ananya.singh@iimu.ac.in",name:"Ananya Singh"});
+
+let _authBusy=false;
+async function handleSession(session){
+  if(_authBusy) return; _authBusy=true;
+  try{
+    if(!session){ state.user=null; state.view="login"; render(); return; }
+    const email = (session.user.email||"").toLowerCase();
+    const role  = roleFor(email);
+    if(!email.endsWith("@"+ALLOWED_DOMAIN) && role!=="admin"){
+      alert("Please sign in with your @"+ALLOWED_DOMAIN+" Google account.");
+      await sb.auth.signOut(); state.user=null; state.view="login"; render(); return;
+    }
+    const name    = session.user.user_metadata?.full_name || session.user.user_metadata?.name || email.split("@")[0];
+    const picture = session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || "";
+    state.user = { email, name, picture, role };
+    save("session", state.user);
+    if(window.gtag) gtag('event','login',{ method:'google', role });
+    await sb.from("profiles").upsert({ email, name, picture, role });
+    await hydrate(role, email);
+    state.view = role==="admin" ? "admin-home" : "home";
+    render();
+  }catch(e){ console.warn("auth error", e); }
+  finally{ _authBusy=false; }
 }
-function signOut(){localStorage.removeItem("pm.session");state.user=null;state.view="login";if(timerHandle)clearInterval(timerHandle);render();}
+
+function mapExamIn(e){ return {
+  id:e.id, name:e.name, caseIds:e.case_ids, startAt:Number(e.start_at), endAt:Number(e.end_at),
+  code:e.code, perCaseSecs:e.per_case_secs, weights:e.weights, open:e.open, released:e.released }; }
+
+async function hydrate(role, email){
+  const { data:exams } = await sb.from("exams").select("*");
+  save("exams", (exams||[]).map(mapExamIn));
+
+  if(role==="admin"){
+    const { data:profiles } = await sb.from("profiles").select("*");
+    const { data:solves }   = await sb.from("solves").select("*");
+    const { data:results }  = await sb.from("exam_results").select("*");
+    const users={}; (profiles||[]).forEach(p=>users[p.email]={email:p.email,name:p.name,picture:p.picture,role:p.role,createdAt:p.created_at});
+    const progress={}; (solves||[]).forEach(s=>{ (progress[s.email]=progress[s.email]||{solved:[]}).solved.push({caseId:s.case_id,type:s.type,stars:s.stars,score:s.score,ts:Number(s.ts)}); });
+    Object.values(progress).forEach(p=>p.solved.sort((a,b)=>a.ts-b.ts));
+    const er={}; (results||[]).forEach(r=>{ (er[r.exam_id]=er[r.exam_id]||{})[r.email]={perCase:r.per_case,avg:Number(r.avg),submittedAt:Number(r.submitted_at)}; });
+    save("users",users); save("progress",progress); save("examResults",er);
+  } else {
+    const { data:solves }  = await sb.from("solves").select("*").eq("email",email);
+    const { data:results } = await sb.from("exam_results").select("*").eq("email",email);
+    const users=load("users",{}); users[email]=state.user; save("users",users);
+    const progress={}; progress[email]={ solved:(solves||[]).map(s=>({caseId:s.case_id,type:s.type,stars:s.stars,score:s.score,ts:Number(s.ts)})).sort((a,b)=>a.ts-b.ts) };
+    save("progress",progress);
+    const er={}; (results||[]).forEach(r=>{ (er[r.exam_id]=er[r.exam_id]||{})[r.email]={perCase:r.per_case,avg:Number(r.avg),submittedAt:Number(r.submitted_at)}; });
+    save("examResults",er);
+  }
+}
 
 // ===== data accessors =====
 const getCase=id=>CASE_PACKS.find(c=>c.id===id);
 const allStudents=()=>Object.values(load("users",{})).filter(u=>u.role==="student");
 const progressOf=email=>(load("progress",{})[email]||{solved:[]}).solved;
-function addSolve(email,solve){const pr=load("progress",{});if(!pr[email])pr[email]={solved:[]};pr[email].solved.push(solve);save("progress",pr);}
+function addSolve(email,solve){
+  const pr=load("progress",{});if(!pr[email])pr[email]={solved:[]};pr[email].solved.push(solve);save("progress",pr);
+  if(window.gtag) gtag('event','case_solved',{ type:solve.type, stars:solve.stars });
+  sb.from("solves").insert({email, case_id:solve.caseId, type:solve.type, stars:solve.stars, score:solve.score, ts:solve.ts})
+    .then(({error})=>{ if(error) console.warn("solve sync failed", error); });
+}
 const totalStars=email=>progressOf(email).reduce((a,s)=>a+s.stars,0);
 function streak(email){const days=[...new Set(progressOf(email).map(s=>Math.floor(s.ts/DAY)))].sort((a,b)=>b-a);if(!days.length)return 0;let st=0,d=Math.floor(now()/DAY);for(const dd of days){if(dd===d||dd===d-1){st++;d=dd-1;}else break;}return st;}
 function starsByType(email){const m={};TYPE_ORDER.forEach(t=>m[t]={earned:0});progressOf(email).forEach(s=>{if(m[s.type])m[s.type].earned+=s.stars;});return m;}
 
 // ===== exams =====
 const getExams=()=>load("exams",[]);
-function saveExam(ex){const e=getExams();const i=e.findIndex(x=>x.id===ex.id);if(i>=0)e[i]=ex;else e.push(ex);save("exams",e);}
+function saveExam(ex){
+  const e=getExams();const i=e.findIndex(x=>x.id===ex.id);if(i>=0)e[i]=ex;else e.push(ex);save("exams",e);
+  sb.from("exams").upsert({ id:ex.id, name:ex.name, case_ids:ex.caseIds, start_at:ex.startAt, end_at:ex.endAt,
+    code:ex.code, per_case_secs:ex.perCaseSecs, weights:ex.weights, open:ex.open, released:ex.released })
+    .then(({error})=>{ if(error) console.warn("exam sync failed", error); });
+}
 function examStatus(ex){const t=now();if(ex.open&&t<=ex.endAt)return"live";if(!ex.open&&t<ex.startAt)return"scheduled";if(t<ex.startAt)return"scheduled";return"ended";}
 const examResultsOf=id=>(load("examResults",{})[id]||{});
-function saveExamResult(examId,email,rec){const all=load("examResults",{});if(!all[examId])all[examId]={};all[examId][email]=rec;save("examResults",all);}
+function saveExamResult(examId,email,rec){
+  const all=load("examResults",{});if(!all[examId])all[examId]={};all[examId][email]=rec;save("examResults",all);
+  sb.from("exam_results").upsert({ exam_id:examId, email, per_case:rec.perCase, avg:rec.avg, submitted_at:rec.submittedAt })
+    .then(({error})=>{ if(error) console.warn("result sync failed", error); });
+}
 
 // ===== marking engine =====
 const STOP=new Set("the a an and or of to for with into from your their this that will can more most less over under both each per via etc are its it's on in by as at be is".split(" "));
@@ -517,12 +594,12 @@ function cumulativeSeries(email,period){
 }
 
 // ===== navigation =====
-function go(view,extra){Object.assign(state,{view},extra||{});if(timerHandle&&view!=="exam-run"){clearInterval(timerHandle);timerHandle=null;}window.scrollTo(0,0);render();}
+function go(view,extra){Object.assign(state,{view},extra||{});if(window.gtag) gtag('event','screen_view',{ screen_name:view });if(timerHandle&&view!=="exam-run"){clearInterval(timerHandle);timerHandle=null;}window.scrollTo(0,0);render();}
 
 // ===== render =====
 function render(){
   const app=document.getElementById("app");
-  if(!state.user){app.innerHTML=viewLogin();bindLogin();return;}
+  if(!state.user){app.innerHTML=viewLogin();return;}
   let body="";
   const v=state.view;
   if(v==="home")body=viewHome();
@@ -566,20 +643,11 @@ function viewLogin(){
     <div class="logo">Place<span class="dot" style="color:var(--amber)">Me</span></div>
     <div class="muted">AI-powered placement interview practice</div>
     <div class="logincard">
-      <div id="gbtn-real"></div>
-      <button class="gbtn" onclick="demoLogin('student')">
+      <button class="gbtn" onclick="sbLogin()">
         <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.5 30.2 0 24 0 14.6 0 6.4 5.4 2.5 13.3l7.9 6.1C12.2 13.6 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.1 5.3-4.6 7l7.1 5.5c4.1-3.8 6.5-9.4 6.5-16z"/><path fill="#FBBC05" d="M10.4 28.6c-.5-1.4-.8-2.9-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C.9 16.6 0 20.2 0 24s.9 7.4 2.5 10.6l7.9-6z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.1-5.5c-2 1.3-4.6 2.1-8.1 2.1-6.4 0-11.8-4.1-13.6-9.9l-7.9 6C6.4 42.6 14.6 48 24 48z"/></svg>
-        Continue with Google (demo student)</button>
-      <div class="divider">or</div>
-      <button class="btn ghost" style="width:100%" onclick="demoLogin('admin')">Sign in as placement admin (demo)</button>
-      <div class="notice">Prototype: data is stored in this browser only. Real Google sign-in activates once a Google OAuth client ID is configured; until then the demo buttons above sign you in.</div>
+        Continue with Google</button>
+      <div class="notice">Sign in with your @${ALLOWED_DOMAIN} account. Placement admins use their listed email.</div>
     </div></div>`;
-}
-function bindLogin(){
-  if(GOOGLE_CLIENT_ID && window.google && google.accounts){
-    google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:onGoogleCredential});
-    google.accounts.id.renderButton(document.getElementById("gbtn-real"),{theme:"outline",size:"large",width:340,text:"continue_with"});
-  }
 }
 
 // ===== STUDENT: home =====
@@ -731,6 +799,7 @@ async function callLLM(messages,{json=false,temperature=0.7}={}){
   const url=USE_PROXY?PROXY_URL:"https://api.openai.com/v1/chat/completions";
   const headers={"Content-Type":"application/json"};
   if(!USE_PROXY){if(!state.apiKey)throw new Error("No API key");headers["Authorization"]="Bearer "+state.apiKey;}
+  else{ const { data:{ session } } = await sb.auth.getSession(); if(session) headers["Authorization"]="Bearer "+session.access_token; }
   const res=await fetch(url,{method:"POST",headers,body:JSON.stringify(body)});
   if(!res.ok){if(res.status===401)throw new Error("Auth error — check OPENAI_API_KEY on the proxy");const t=await res.text().catch(()=>"");throw new Error("API "+res.status+" "+t.slice(0,160));}
   const data=await res.json();return data.choices?.[0]?.message?.content??"";
@@ -1107,12 +1176,11 @@ function exportCSV(examId){
 }
 
 // ===== init =====
-function init(){
-  seed();
-  if(GOOGLE_CLIENT_ID){const s=document.createElement("script");s.src="https://accounts.google.com/gsi/client";s.async=true;s.onload=()=>{if(state.view==="login")bindLogin();};document.head.appendChild(s);}
-  const sess=load("session",null);
-  if(sess){state.user=sess;state.view=sess.role==="admin"?"admin-home":"home";}
-  render();
+async function init(){
+  render(); // paint login immediately
+  const { data:{ session } } = await sb.auth.getSession();
+  await handleSession(session);
+  sb.auth.onAuthStateChange((_evt, s)=>handleSession(s));
 }
 init();
 </script>
