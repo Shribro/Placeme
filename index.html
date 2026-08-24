@@ -378,6 +378,7 @@ const ALLOWED_DOMAIN = "iimu.ac.in";         // students must sign in with this 
 const SUPABASE_URL  = "https://jxksrhvjwdalktrbmpbu.supabase.co";
 const SUPABASE_ANON = "sb_publishable_69U-aP6KEW6oC-mZ56uFeA_IS0ZP9IO";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+const DEMO_KEY = "placeme-guest-2026";   // lets guest (no-login) users reach the AI proxy; must match DEMO_KEY on Vercel
 const DEFAULT_WEIGHTS = {solution:60, answers:25, time:15};
 const PRACTICE_WEIGHTS = {solution:65, answers:35, time:0};
 
@@ -448,6 +449,19 @@ function sbLogin(){
     provider:"google",
     options:{ redirectTo: window.location.origin, queryParams:{ hd: ALLOWED_DOMAIN } }
   });
+}
+// No-login guest access. role="student" = clean practice; role="admin" = seeded sample dashboard.
+function guestLogin(role){
+  if(role==="admin") seed();   // populate sample cohort locally so the dashboard isn't empty
+  state.user = {
+    email: role==="admin" ? "demo-admin@place-me.in" : "guest@place-me.in",
+    name:  role==="admin" ? "Demo Admin" : "Guest User",
+    picture:"", role, guest:true
+  };
+  save("session", state.user);
+  if(window.gtag) gtag('event','login',{ method:'guest', role });
+  state.view = role==="admin" ? "admin-home" : "home";
+  render();
 }
 async function signOut(){
   await sb.auth.signOut();
@@ -647,6 +661,9 @@ function viewLogin(){
         <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.5 30.2 0 24 0 14.6 0 6.4 5.4 2.5 13.3l7.9 6.1C12.2 13.6 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.1 5.3-4.6 7l7.1 5.5c4.1-3.8 6.5-9.4 6.5-16z"/><path fill="#FBBC05" d="M10.4 28.6c-.5-1.4-.8-2.9-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C.9 16.6 0 20.2 0 24s.9 7.4 2.5 10.6l7.9-6z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.1-5.5c-2 1.3-4.6 2.1-8.1 2.1-6.4 0-11.8-4.1-13.6-9.9l-7.9 6C6.4 42.6 14.6 48 24 48z"/></svg>
         Continue with Google</button>
       <div class="notice">Sign in with your @${ALLOWED_DOMAIN} account. Placement admins use their listed email.</div>
+      <div class="divider" style="margin:16px 0;text-align:center;color:var(--ink-soft);font-size:12px">— or try without logging in —</div>
+      <button class="btn ghost" style="width:100%;justify-content:center" onclick="guestLogin('student')">Continue as guest (no login)</button>
+      <button class="btn ghost" style="width:100%;justify-content:center;margin-top:8px" onclick="guestLogin('admin')">View admin demo (sample data)</button>
     </div></div>`;
 }
 
@@ -799,7 +816,11 @@ async function callLLM(messages,{json=false,temperature=0.7}={}){
   const url=USE_PROXY?PROXY_URL:"https://api.openai.com/v1/chat/completions";
   const headers={"Content-Type":"application/json"};
   if(!USE_PROXY){if(!state.apiKey)throw new Error("No API key");headers["Authorization"]="Bearer "+state.apiKey;}
-  else{ const { data:{ session } } = await sb.auth.getSession(); if(session) headers["Authorization"]="Bearer "+session.access_token; }
+  else{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session) headers["Authorization"]="Bearer "+session.access_token;
+    else headers["x-demo-key"]=DEMO_KEY;   // guest (no-login) path
+  }
   const res=await fetch(url,{method:"POST",headers,body:JSON.stringify(body)});
   if(!res.ok){if(res.status===401)throw new Error("Auth error — check OPENAI_API_KEY on the proxy");const t=await res.text().catch(()=>"");throw new Error("API "+res.status+" "+t.slice(0,160));}
   const data=await res.json();return data.choices?.[0]?.message?.content??"";
@@ -1179,8 +1200,14 @@ function exportCSV(examId){
 async function init(){
   render(); // paint login immediately
   const { data:{ session } } = await sb.auth.getSession();
-  await handleSession(session);
-  sb.auth.onAuthStateChange((_evt, s)=>handleSession(s));
+  if(session){ await handleSession(session); }
+  else {
+    const sess = load("session", null);
+    if(sess && sess.guest){ state.user=sess; state.view = sess.role==="admin"?"admin-home":"home"; render(); }
+    else { state.user=null; state.view="login"; render(); }
+  }
+  // react to real Google sign-in/out only; ignore null events so guests aren't kicked out
+  sb.auth.onAuthStateChange((_evt, s)=>{ if(s) handleSession(s); });
 }
 init();
 </script>
